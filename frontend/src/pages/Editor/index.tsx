@@ -248,7 +248,7 @@ export default function Editor() {
                   className="hidden"
                 />
               </label>
-
+              <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
                 {uploadedImages.map((img, index) => (
                   <div
@@ -264,6 +264,30 @@ export default function Editor() {
                       className="w-full h-full object-cover"
                     />
                   </div>
+                  
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+              <h1>Background:</h1>
+              <button onClick={() => setContent((prev) => ({ ...prev, bgColor: "#808080", bgImage: "" }))} className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">Padrão</button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev) => ({ ...prev, bgImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
                 ))}
               </div>
             </div>
@@ -390,11 +414,11 @@ export default function Editor() {
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 items-start">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Efeito Glassmorphism
                 </label>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full">
                   <input
                       type="checkbox"
                     checked={content.glassmorphism}
@@ -404,7 +428,7 @@ export default function Editor() {
                         glassmorphism: e.target.checked,
                       }))
                     } 
-                    className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
+                    className="h-10 w-10 rounded-lg cursor-pointer bg-transparent"
                   />
                   {content.glassmorphism && (
                     <input
@@ -415,7 +439,8 @@ export default function Editor() {
                           ...prev,
                           glassColor: e.target.value,
                         }))
-                      }
+                      } 
+                      className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent "
                     />  
                   )}
                 </div>

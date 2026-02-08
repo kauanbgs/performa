@@ -1,10 +1,20 @@
 export default function SpotifyCanvas({content, handleBlur}: {content: any, handleBlur: any}) {
     return (
-      <div style={{backgroundColor: content.bgColor}} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
+      <div style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
       <div
               className="w-75 h-80 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
-              style={content.glassmorphism ? { backgroundColor: content.glassColor } : {backgroundColor: content.contentColor}}
-            >
+              style={
+              content.glassmorphism
+                ? {
+                    backgroundColor: `${content.glassColor}33`, // transparência
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                  }
+                : {
+                    backgroundColor: content.contentColor,
+                  }
+            }
+            >   
               <header className="text-left ml-6 mt-2 flex items-center gap-2">
                 <div className="w-9 h-9 mb-2">
                   <img
@@ -48,7 +58,7 @@ export default function SpotifyCanvas({content, handleBlur}: {content: any, hand
               >
                 {content.lyrics}
               </p>
-              <footer className="ml-4 fixed bottom-58">
+              <footer className="ml-4 fixed">
                 <img className="w-28 h-28" src="spotify.png" alt="spotify" />
               </footer>
             </div>
