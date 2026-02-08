@@ -18,15 +18,24 @@ import {
 } from "lucide-react";
 import "../../index.css";
 import { useState } from "react";
+import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
+import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 
 export default function Editor() {
   const [activeTool, setActiveTool] = useState("design");
-  const [activeMode, setActiveMode] = useState("spotify");
+  const [activeMode, setActiveMode] = useState("spotify ");
   const [content, setContent] = useState({
     title: "Fake Plastic Trees",
     artist: "Radiohead",
     lyrics: "She looks like the \nreal thing\nShe tastes like the \nreal thing",
     coverImage: "radiohead.jpg",
+    bgImage: "transparente.jpg",
+    glassmorphism: true,
+    glassColor: "#ffffff",
+    posterImage: "radiohead.jpg",
+    profileImage: "radiohead.jpg",
+    rating: 5,
+    contentColor: "#000000",
     bgColor: "#9a6fe3",
   });
   const [uploadedImages, setUploadedImages] = useState<string[]>([
@@ -165,23 +174,10 @@ export default function Editor() {
               </button>
               
             </div>
-          )}
-
-          {activeTool === "text" && activeMode === "spotify" && (
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Música
-                </label>
-                <input
-                  type="text"
-                  value={content.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
-                  placeholder="Nome da música"
-                />
-              </div>
-
+          )} 
+          {activeTool === "text" && (
+            activeMode === "spotify" ? (
+              <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Artista
@@ -194,7 +190,18 @@ export default function Editor() {
                   placeholder="Nome do artista"
                 />
               </div>
-
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Artista
+                </label>
+                <input
+                  type="text"
+                  value={content.artist}
+                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Nome do artista"
+                />
+              </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Letra
@@ -207,6 +214,24 @@ export default function Editor() {
                 />
               </div>
             </div>
+              
+            ) : (
+              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Nome do filme
+                </label>
+                <input
+                  type="text"
+                  value={content.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Nome do filme"
+                />
+              </div>
+              
+            </div>
+            ) 
           )}
 
           {activeTool === "uploads" && activeMode === "spotify" && (
@@ -244,8 +269,105 @@ export default function Editor() {
             </div>
           )}
 
-          {activeTool === "style" && activeMode === "spotify" &&  (
+          {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
+              <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+              <div className="flex items-center gap-2">
+              <h1>Background:</h1>
+              <button onClick={() => setContent((prev) => ({ ...prev, bgColor: "#808080", bgImage: "" }))} className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">Padrão</button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev) => ({ ...prev, bgImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              <h1>Imagem de capa:</h1>
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev) => ({ ...prev, posterImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              <h1>Foto de perfil:</h1>
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev) => ({ ...prev, profileImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTool === "style" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Cor do Conteúdo
+                </label>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg border border-gray-200 shadow-sm"
+                    style={{ backgroundColor: content.contentColor }}
+                  ></div>
+                  <input
+                    type="color"
+                    value={content.contentColor}
+                    onChange={(e) =>
+                      setContent((prev) => ({
+                        ...prev,
+                          contentColor: e.target.value,
+                      }))
+                    }
+                    className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
+                  />
+                </div>
+              </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Cor do Fundo
@@ -261,11 +383,41 @@ export default function Editor() {
                     onChange={(e) =>
                       setContent((prev) => ({
                         ...prev,
-                        bgColor: e.target.value,
+                          bgColor: e.target.value,
                       }))
                     }
                     className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
                   />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Efeito Glassmorphism
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                      type="checkbox"
+                    checked={content.glassmorphism}
+                    onChange={(e) =>
+                      setContent((prev) => ({
+                        ...prev,
+                        glassmorphism: e.target.checked,
+                      }))
+                    } 
+                    className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
+                  />
+                  {content.glassmorphism && (
+                    <input
+                      type="color"
+                      value={content.glassColor}
+                      onChange={(e) =>
+                        setContent((prev) => ({
+                          ...prev,
+                          glassColor: e.target.value,
+                        }))
+                      }
+                    />  
+                  )}
                 </div>
               </div>
             </div>
@@ -303,63 +455,13 @@ export default function Editor() {
 
         {/* Canvas Area */}
         <div className="flex-1 bg-gray-100 flex items-center justify-center p-12 overflow-hidden relative">
-          {/* The Canvas */}
-          <div className="bg-[#fcfbf7] w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
             {activeMode === "spotify" && (
-              <div
-              className="w-75 h-80 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
-              style={{ backgroundColor: content.bgColor }}
-            >
-              <header className="text-left ml-6 mt-2 flex items-center gap-2">
-                <div className="w-9 h-9 mb-2">
-                  <img
-                    className="rounded-sm w-full h-full object-cover"
-                    src={content.coverImage}
-                    alt=""
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <h1
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      handleBlur("title", e.currentTarget.textContent || "")
-                    }
-                    className="font-primary text-[13px] text-black font-secondary font-bold leading-[1.1] mt-6 outline-none focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
-                  >
-                    {content.title}
-                  </h1>
-                  <h2
-                    contentEditable
-                    spellCheck={false}
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      handleBlur("artist", e.currentTarget.textContent || "")
-                    }
-                    className="font-primary text-[10px] text-black font-secondary font-medium leading-[1.1] mb-8 mt-1 outline-none focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
-                  >
-                    {content.artist}
-                  </h2>
-                </div>
-              </header>
-              <p
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) =>
-                  handleBlur("lyrics", e.currentTarget.textContent || "")
-                }
-                className="font-primary text-xl text-black font-secondary font-bold leading-[1.3] text-left ml-5 mt-3 whitespace-pre-wrap outline-none focus:bg-white/10 rounded px-1 transition-colors"
-                style={{ wordBreak: "break-word" }}
-              >
-                {content.lyrics}
-              </p>
-              <footer className="ml-4 fixed bottom-69">
-                <img className="w-28 h-28" src="spotify.png" alt="spotify" />
-              </footer>
-            </div>
+              <SpotifyCanvas content={content} handleBlur={handleBlur} />
+            )}
+            {activeMode === "letterboxd" && (
+              <LetterboxdCanvas content={content} handleBlur={handleBlur} />
             )}
           </div>
-        </div>
 
         {/* Zoom Controls */}
         <div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">
