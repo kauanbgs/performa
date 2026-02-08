@@ -17,8 +17,39 @@ import {
   Maximize,
 } from "lucide-react";
 import "../../index.css";
+import { useState } from "react";
 
 export default function Editor() {
+  const [activeTool, setActiveTool] = useState("design");
+  const [activeMode, setActiveMode] = useState("spotify");
+  const [content, setContent] = useState({
+    title: "Fake Plastic Trees",
+    artist: "Radiohead",
+    lyrics: "She looks like the \nreal thing\nShe tastes like the \nreal thing",
+    coverImage: "radiohead.jpg",
+    bgColor: "#9a6fe3",
+  });
+  const [uploadedImages, setUploadedImages] = useState<string[]>([
+    "radiohead.jpg",
+  ]);
+
+  const handleBlur = (field: keyof typeof content, value: string) => {
+    setContent((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleInputChange = (field: keyof typeof content, value: string) => {
+    setContent((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setUploadedImages((prev) => [url, ...prev]);
+      setContent((prev) => ({ ...prev, coverImage: url }));
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
@@ -28,28 +59,62 @@ export default function Editor() {
         </div>
 
         <nav className="flex flex-col w-full gap-2">
-          <button className="flex flex-col items-center gap-1.5 p-3 text-white bg-white/10 relative">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+          <button
+            onClick={() => setActiveTool("design")}
+            className={`flex flex-col items-center gap-1.5 p-3 transition-colors ${
+              activeTool === "design"
+                ? "text-white bg-white/10 relative"
+                : "hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {activeTool === "design" && (
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+            )}
             <LayoutTemplate className="w-5 h-5" />
             <span className="text-[10px] font-medium">Design</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors">
+          <button
+            onClick={() => setActiveTool("text")}
+            className={`flex flex-col items-center gap-1.5 p-3 transition-colors ${
+              activeTool === "text"
+                ? "text-white bg-white/10 relative"
+                : "hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {activeTool === "text" && (
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+            )}
             <Type className="w-5 h-5" />
             <span className="text-[10px] font-medium">Texto</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors">
+          <button
+            onClick={() => setActiveTool("uploads")}
+            className={`flex flex-col items-center gap-1.5 p-3 transition-colors ${
+              activeTool === "uploads"
+                ? "text-white bg-white/10 relative"
+                : "hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {activeTool === "uploads" && (
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+            )}
             <ImageIcon className="w-5 h-5" />
             <span className="text-[10px] font-medium">Uploads</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors">
-            <Sparkles className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Elementos</span>
-          </button>
-
-          <button className="flex flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors">
+          <button
+            onClick={() => setActiveTool("style")}
+            className={`flex flex-col items-center gap-1.5 p-3 transition-colors ${
+              activeTool === "style"
+                ? "text-white bg-white/10 relative"
+                : "hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {activeTool === "style" && (
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+            )}
             <Palette className="w-5 h-5" />
             <span className="text-[10px] font-medium">Estilo</span>
           </button>
@@ -65,26 +130,146 @@ export default function Editor() {
         </div>
       </aside>
 
-      {/* 2. Templates Panel */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col z-10">
+      {/* 2. Toolbox Panel */}
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col z-10 transition-all duration-300">
         <div className="h-16 flex items-center px-6 border-b border-gray-100">
-          <h2 className="font-bold text-gray-800 text-sm tracking-wide">
-            TEMPLATES
+          <h2 className="font-bold text-gray-800 text-sm tracking-wide uppercase">
+            {activeTool === "design" && "Templates"}
+            {activeTool === "text" && "Editor de Texto"}
+            {activeTool === "uploads" && "Uploads"}
+            {activeTool === "style" && "Estilo"}
+            {activeTool === "elements" && "Elementos"}
           </h2>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Template Item 1 */}
-            <div className="col-span-1 flex flex-col gap-2 group cursor-pointer">
-              <div className="aspect-[3/4] rounded-lg border-2 border-gray-900 flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors">
-                <Disc className="w-8 h-8 text-gray-400" />
-              </div>
-              <span className="text-xs font-medium text-gray-900 text-center">
-                Fake Spotify
-              </span>
+          {activeTool === "design" && (
+            <div className="grid grid-cols-2 gap-4">
+              {/* Template Item 1 */}
+              <button onClick={() => setActiveMode("spotify")} className="col-span-1 flex flex-col gap-2 group cursor-pointer">
+                <div className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "spotify" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}>
+                  <Disc className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Fake Spotify
+                </span>
+              </button>
+              {/* Template Item 2 */}
+              <button onClick={() => setActiveMode("letterboxd")} className="col-span-1 flex flex-col gap-2 group cursor-pointer">
+                <div className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "letterboxd" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}>
+                  <Film className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Fake Letterboxd
+                </span>
+              </button>
+              
             </div>
-          </div>
+          )}
+
+          {activeTool === "text" && activeMode === "spotify" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Música
+                </label>
+                <input
+                  type="text"
+                  value={content.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Nome da música"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Artista
+                </label>
+                <input
+                  type="text"
+                  value={content.artist}
+                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Nome do artista"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Letra
+                </label>
+                <textarea
+                  value={content.lyrics}
+                  onChange={(e) => handleInputChange("lyrics", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[150px] resize-y"
+                  placeholder="Digite a letra da música..."
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTool === "uploads" && activeMode === "spotify" && (
+            <div className="flex flex-col gap-6">
+              <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev) => ({ ...prev, coverImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTool === "style" && activeMode === "spotify" &&  (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Cor do Fundo
+                </label>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg border border-gray-200 shadow-sm"
+                    style={{ backgroundColor: content.bgColor }}
+                  ></div>
+                  <input
+                    type="color"
+                    value={content.bgColor}
+                    onChange={(e) =>
+                      setContent((prev) => ({
+                        ...prev,
+                        bgColor: e.target.value,
+                      }))
+                    }
+                    className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -93,7 +278,7 @@ export default function Editor() {
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10">
           <div className="flex items-center gap-4">
-            <span className="font-medium text-gray-900">Citação Editorial</span>
+            <span className="font-medium text-gray-900">Fake Spotify</span>
             <span className="text-gray-300">|</span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full border border-gray-400"></span>{" "}
@@ -120,23 +305,59 @@ export default function Editor() {
         <div className="flex-1 bg-gray-100 flex items-center justify-center p-12 overflow-hidden relative">
           {/* The Canvas */}
           <div className="bg-[#fcfbf7] w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
-            <div className = "bg-[#9a6fe3] w-75 h-80 rounded-3xl">
+            {activeMode === "spotify" && (
+              <div
+              className="w-75 h-80 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
+              style={{ backgroundColor: content.bgColor }}
+            >
               <header className="text-left ml-6 mt-2 flex items-center gap-2">
                 <div className="w-9 h-9 mb-2">
-                  <img className="rounded-sm" src="radiohead.jpg" alt="" />
+                  <img
+                    className="rounded-sm w-full h-full object-cover"
+                    src={content.coverImage}
+                    alt=""
+                  />
                 </div>
                 <div className="flex flex-col">
-                  <h1 className="font-primary text-[13px] text-black font-secondary font-bold leading-[1.1] mt-6 ">Fake Plastic Trees</h1>
-                  <h2 className="font-primary text-[10px] text-black font-secondary font-medium leading-[1.1] mb-8 mt-1">Radiohead</h2>
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) =>
+                      handleBlur("title", e.currentTarget.textContent || "")
+                    }
+                    className="font-primary text-[13px] text-black font-secondary font-bold leading-[1.1] mt-6 outline-none focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
+                  >
+                    {content.title}
+                  </h1>
+                  <h2
+                    contentEditable
+                    spellCheck={false}
+                    suppressContentEditableWarning
+                    onBlur={(e) =>
+                      handleBlur("artist", e.currentTarget.textContent || "")
+                    }
+                    className="font-primary text-[10px] text-black font-secondary font-medium leading-[1.1] mb-8 mt-1 outline-none focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
+                  >
+                    {content.artist}
+                  </h2>
                 </div>
               </header>
-              <p className="font-primary text-xl text-black font-secondary font-bold leading-[1.3] text-left ml-6 mt-1">
-                She looks like the <br />real thing<br /> She tastes like the <br />real thing
+              <p
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) =>
+                  handleBlur("lyrics", e.currentTarget.textContent || "")
+                }
+                className="font-primary text-xl text-black font-secondary font-bold leading-[1.3] text-left ml-5 mt-3 whitespace-pre-wrap outline-none focus:bg-white/10 rounded px-1 transition-colors"
+                style={{ wordBreak: "break-word" }}
+              >
+                {content.lyrics}
               </p>
-              <footer className="ml-4">
+              <footer className="ml-4 fixed bottom-69">
                 <img className="w-28 h-28" src="spotify.png" alt="spotify" />
               </footer>
             </div>
+            )}
           </div>
         </div>
 
