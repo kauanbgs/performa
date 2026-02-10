@@ -2,7 +2,7 @@ export default function SpotifyCanvas({content, handleBlur}: {content: any, hand
     return (
       <div style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
       <div
-              className="w-75 h-80 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
+              className="w-75 h-fit pb-25 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
               style={
               content.glassmorphism
                 ? {
@@ -53,7 +53,7 @@ export default function SpotifyCanvas({content, handleBlur}: {content: any, hand
                 onBlur={(e) =>
                   handleBlur("lyrics", e.currentTarget.textContent || "")
                 }
-                className="font-primary text-xl text-black font-secondary font-bold leading-[1.3] text-left ml-5 mt-3 whitespace-pre-wrap outline-none focus:bg-white/10 rounded px-1 transition-colors"
+                className="font-primary text-xl w-60 text-black font-secondary font-bold leading-[1.3] text-left ml-5 mt-3 whitespace-pre-wrap outline-none focus:bg-white/10 rounded px-1 transition-colors"
                 style={{ wordBreak: "break-word" }}
               >
                 {content.lyrics}
