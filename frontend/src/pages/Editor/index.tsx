@@ -63,9 +63,9 @@ export default function Editor() {
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
       <aside className="w-[72px] bg-[#1a1a1a] flex flex-col items-center py-6 text-gray-400 z-20">
-        <div className="mb-8 font-primary text-white text-2xl font-bold flex items-center justify-center w-10 h-10 rounded-full bg-white/10">
-          P.
-        </div>
+        <Link to="/home" className="mb-8 font-secondary italic text-white text-xl font-bold flex items-center justify-center">
+          p.me
+        </Link>
 
         <nav className="flex flex-col w-full gap-2">
           <button
@@ -184,10 +184,10 @@ export default function Editor() {
                 </label>
                 <input
                   type="text"
-                  value={content.artist}
-                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  value={content.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
-                  placeholder="Nome do artista"
+                  placeholder="Nome da música"
                 />
               </div>
               <div className="flex flex-col gap-2">
