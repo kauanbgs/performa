@@ -7,16 +7,16 @@ datasource db {
 // Define custom output path for generated Prisma Client
 generator client {
   provider = "prisma-client-js"
-  output   = "/app/generated/prisma-client"
+  output   = "../generated-prisma-client"
 }
 
 
 model Project {
   id           String   @id @default(uuid())
-  title        String
-  mode         String
-  content      Json
-  previewImage String?
+  title        String   
+  mode         String   @default("free")
+  content      Json     @default("{}")
+  previewImage String?  @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
