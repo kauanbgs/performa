@@ -3,10 +3,8 @@ import {
   LayoutTemplate,
   Type,
   Image as ImageIcon,
-  Sparkles,
   Palette,
   Home,
-  Quote,
   Film,
   Disc,
   Undo,
@@ -17,9 +15,10 @@ import {
   Maximize,
 } from "lucide-react";
 import "../../index.css";
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
+import * as htmlToImage from "html-to-image";
 
 export default function Editor() {
   const [activeTool, setActiveTool] = useState("design");
@@ -58,7 +57,20 @@ export default function Editor() {
       setContent((prev) => ({ ...prev, coverImage: url }));
     }
   };
+  const divRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const handleDownload = async () => {
+  if (!canvasRef.current) return;
 
+  const dataUrl = await htmlToImage.toPng(canvasRef.current, {
+    pixelRatio: 2,
+  });
+
+  const link = document.createElement("a");
+  link.download = "canvas.png";
+  link.href = dataUrl;
+  link.click();
+};
   return (
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
@@ -471,7 +483,7 @@ export default function Editor() {
               <Redo className="w-5 h-5" />
             </button>
             <div className="h-6 w-px bg-gray-200 mx-2"></div>
-            <button className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
+            <button onClick={handleDownload} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
               <Download className="w-4 h-4" />
               Exportar
             </button>
@@ -479,14 +491,14 @@ export default function Editor() {
         </header>
 
         {/* Canvas Area */}
-        <div className="flex-1 bg-gray-100 flex items-center justify-center p-12 overflow-hidden relative">
+        <div ref={divRef} className="flex-1 bg-gray-100 flex items-center justify-center p-12 overflow-hidden relative">
             {activeMode === "spotify" && (
-              <SpotifyCanvas content={content} handleBlur={handleBlur} />
+              <SpotifyCanvas ref={canvasRef} content={content} handleBlur={handleBlur} />
             )}
             {activeMode === "letterboxd" && (
               <LetterboxdCanvas content={content} handleBlur={handleBlur} />
             )}
-          </div>
+        </div>
 
         {/* Zoom Controls */}
         <div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">

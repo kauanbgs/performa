@@ -1,6 +1,9 @@
-export default function SpotifyCanvas({content, handleBlur}: {content: any, handleBlur: any}) {
+import { forwardRef } from "react";
+
+const SpotifyCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: any }>(
+  ({ content, handleBlur }, ref) => {
     return (
-      <div style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
+      <div ref={ref} style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
       <div
               className="w-75 h-fit pb-25 rounded-3xl pointer-events-auto select-text transition-colors duration-300"
               style={
@@ -58,9 +61,11 @@ export default function SpotifyCanvas({content, handleBlur}: {content: any, hand
               >
                 {content.lyrics}
               </p>
-              <footer className="ml-4 fixed">
+              <footer className="ml-4 absolute">
                 <img className="w-28 h-28" src="spotify.png" alt="spotify" />
               </footer>
             </div>
           </div>
-    )}
+    )})
+    
+export default SpotifyCanvas;
