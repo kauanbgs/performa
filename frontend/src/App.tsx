@@ -3,6 +3,7 @@ import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import Editor from "./pages/Editor";
 import { ProjectProvider } from "./context/ProjectContext";
+import ExportTemplate from "./components/canvas/exportTemplate";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/editor" element={<Editor />} />
+          <Route path="/export-template" element={<ExportTemplate />} />
         </Routes>
       </ProjectProvider>
     </BrowserRouter>

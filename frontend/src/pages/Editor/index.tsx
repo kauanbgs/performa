@@ -18,28 +18,36 @@ import "../../index.css";
 import React, { useState, useRef } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
-import * as htmlToImage from "html-to-image";
 
 export default function Editor() {
   const [activeTool, setActiveTool] = useState("design");
   const [activeMode, setActiveMode] = useState("spotify ");
   const [content, setContent] = useState({
-    title: "Fake Plastic Trees",
-    artist: "Radiohead",
-    lyrics: "She looks like the \nreal thing\nShe tastes like the \nreal thing",
-    coverImage: "radiohead.jpg",
-    bgImage: "transparente.jpg",
+    title: "While My Guitar Gently Weeps",
+    artist: "The Beatles",
+    lyrics: "I look at you all, see the love there that's sleeping\nWhile my guitar gently weeps",
+    coverImage: "beatlescapa.jpg",
+    bgImage: "beatles.jpg",
     glassmorphism: true,
     glassColor: "#ffffff",
-    posterImage: "radiohead.jpg",
-    profileImage: "radiohead.jpg",
+    posterImage: "beatlescapa.jpg",
+    profileImage: "beatlescapa.jpg",
     rating: 5,
-    contentColor: "#000000",
-    bgColor: "#9a6fe3",
+    contentColor: "#808080",
+    bgColor: "#ffffff",
   });
   const [uploadedImages, setUploadedImages] = useState<string[]>([
     "radiohead.jpg",
   ]);
+
+  const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+  });
+};
 
   const handleBlur = (field: keyof typeof content, value: string) => {
     setContent((prev) => ({ ...prev, [field]: value }));
@@ -49,27 +57,30 @@ export default function Editor() {
     setContent((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setUploadedImages((prev) => [url, ...prev]);
-      setContent((prev) => ({ ...prev, coverImage: url }));
+      const base64 = await fileToBase64(file);
+      setUploadedImages((prev) => [base64, ...prev]);
+      setContent((prev) => ({ ...prev, coverImage: base64 }));
     }
   };
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const handleDownload = async () => {
-  if (!canvasRef.current) return;
+    const response = await fetch("http://localhost:5000/performa/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(content),
+    });
 
-  const dataUrl = await htmlToImage.toPng(canvasRef.current, {
-    pixelRatio: 2,
-  });
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
 
-  const link = document.createElement("a");
-  link.download = "canvas.png";
-  link.href = dataUrl;
-  link.click();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "spotify.png";
+    a.click();
 };
   return (
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">

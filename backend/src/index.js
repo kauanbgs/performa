@@ -9,9 +9,9 @@ class appcontroler {
     this.exceptionHandler();
   }
   middlewares() {
-    this.express.use(express.json());
+    this.express.use(express.json({ limit: "10mb" }));
+    this.express.use(express.urlencoded({ limit: "10mb", extended: true }));
     this.express.use(cors());
-    this.express.use(express.urlencoded({ extended: true }));
   }
   routes() {
     const apiRoutes = require("./routes/apiRoutes");
