@@ -99,14 +99,8 @@ module.exports = class userController {
   }
   static async getProfile(req, res) {
     try {
-      const {authorization} = req.headers;
-      if (!authorization) {
-        return res.status(401).json({ error: "Token não fornecido" });
-      }
-      const token = authorization.split(" ")[1];
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "");
       const user = await prisma.user.findUnique({
-        where: { id: decodedToken.id },
+        where: { id: req.userId },
       });
       if (!user) {
         return res.status(404).json({ error: "Usuário não encontrado" });

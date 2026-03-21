@@ -1,8 +1,14 @@
 import { Navbar } from "../../components/layout/Navbar";
 import { Link } from "react-router-dom";
 import { Music, Clapperboard, Quote, MoreHorizontal, Film } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/");
+  }
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans">
       <Navbar />
@@ -11,7 +17,7 @@ export default function Home() {
         {/* Header */}
         <header className="mb-20">
           <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4">
-            Olá, Ana.
+            Olá, {localStorage.getItem("name")}.
           </h1>
           <p className="text-gray-400 font-secondary text-lg">
             O que vamos criar hoje?

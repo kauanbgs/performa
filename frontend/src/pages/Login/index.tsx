@@ -31,6 +31,8 @@ export default function Login() {
         message: response.data.message || "Login realizado com sucesso!",
         type: "success"
       });
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("name", response.data.user.name);
       setTimeout(() => navigate("/home"), 1000); // Vai deixar o usuário ver a mensagem por 1seg
     } catch (error: any) {
       const msgErro =
