@@ -12,9 +12,9 @@ const colorMap = {
     azul: "text-blue-500",
 }
 
-export default function Text({ variant, children, color = 'preto', className = "" }: { variant: keyof typeof variants, children: React.ReactNode, color?: keyof typeof colorMap, className?: string }) {
+export default function Text({ variant, children, color = 'preto', className = "", font = 'primary' }: { variant: keyof typeof variants, children: React.ReactNode, color?: keyof typeof colorMap, className?: string, font?: 'primary' | 'secondary' }) {
     return (
-        <p className={`${variants[variant]} ${colorMap[color]} ${className}`}>
+        <p className={`${variants[variant]} ${colorMap[color]} ${className} ${font === 'primary' ? 'font-primary' : 'font-secondary'}`}>
             {children}
         </p>
     )

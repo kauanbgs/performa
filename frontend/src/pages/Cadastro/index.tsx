@@ -6,8 +6,9 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import api from "../../services/axios";
 
-export default function Login() {
+export default function Cadastro() {
   const [user, setUser] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -26,12 +27,12 @@ export default function Login() {
     e.preventDefault();
     setFeedback({ message: "", type: "" });
     try {
-      const response = await api.postLogin(user);
+      const response = await api.postCadastro(user);
       setFeedback({
-        message: response.data.message || "Login realizado com sucesso!",
+        message: response.data.message || "Cadastro realizado com sucesso!",
         type: "success"
       });
-      setTimeout(() => navigate("/home"), 1000); // Vai deixar o usuário ver a mensagem por 1seg
+      setTimeout(() => navigate("/login"), 1000); // Vai deixar o usuário ver a mensagem por 1seg
     } catch (error: any) {
       const msgErro =
         error.response.data.error || "Erro ao conectar com o servidor.";
@@ -46,6 +47,18 @@ export default function Login() {
           <img src="/logoPerforma.png" alt="" className="w-48" />
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col p-6">
+          <div className="flex flex-col mb-3">
+            <Text variant="text" font="secondary">Nome</Text>
+            <Input
+              type="text"
+              placeholder="Kauanbgs13"
+              fill
+              onChange={onChange}
+              id="name"
+              name="name"
+              value={user.name}
+            />
+          </div>
           <div className="flex flex-col mb-3">
             <Text variant="text" font="secondary">Email</Text>
             <Input
@@ -87,9 +100,9 @@ export default function Login() {
         </form>
         <div className="flex flex-col p-7 justify-center items-center gap-12">
           <Text variant="text" className="text-sm mt-8" font="secondary">
-            Não tem uma conta?{" "}
-            <Link to="/cadastro" className="cursor-pointer hover:underline">
-              Cadastre-se
+            Já tem uma conta?{" "}
+            <Link to="/login" className="cursor-pointer hover:underline">
+              Faça login
             </Link>
           </Text>
         </div>
