@@ -17,8 +17,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "6.15.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "puppeteer": "^24.37.2"
+    "jsonwebtoken": "^9.0.3",
+    "puppeteer": "^24.37.2",
+    "uuid": "^13.0.0"
   }
 }
