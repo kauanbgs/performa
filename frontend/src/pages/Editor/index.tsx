@@ -25,13 +25,12 @@ import api from "../../services/axios";
 export default function Editor() {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") as string;
   if (!token) {
     navigate("/");
-    return;
   }
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
 
 
 

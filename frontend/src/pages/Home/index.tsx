@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Quote, MoreHorizontal, Film } from "lucide-react";
+import { Music, Clapperboard, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -7,36 +7,27 @@ import api from "../../services/axios";
 
 export default function Home() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") as string;
   if (!token) {
     navigate("/");
   }
 
-  useEffect(() => {
-  const getProjects = async () => {
-    try {
-      const profile = await api.getProfile(token);
-      const userId = profile.data.id;
-
-      const response = await api.getProjects(token, userId);
-      setLastProject(response.data[0]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  getProjects();
-}, [token]);
-
-  const id = api.getProfile(token).then((response: any) => response.data.id);
   const [projects, setProjects] = useState([]);
-  const [lastProject, setLastProject] = useState({previewImage: ""});
+  
   useEffect(() => {
-    const getProjects = async () => {
-      const response = await api.getProjects(token, id);
-      setProjects(response.data);
+    const fetchData = async () => {
+      try {
+        const profile = await api.getProfile(token);
+        const userId = profile.data.id;
+
+        const response = await api.getProjects(token, userId);
+        setProjects(response.data);
+      } catch (err) {
+        console.error(err);
+      }
     };
-    getProjects();
-  }, []);
+    fetchData();
+  }, [token]);
 
   const createProject = (title: string) => {
     const defaultTitle = title || "Novo Projeto";

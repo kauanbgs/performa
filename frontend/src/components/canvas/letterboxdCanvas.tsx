@@ -1,8 +1,10 @@
 import { Star } from "lucide-react";
+import { forwardRef } from "react";
 
-export default function LetterboxdCanvas({content, handleBlur}: {content: any, handleBlur: any}) {
+const LetterboxdCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: any }>(
+  ({ content, handleBlur }, ref) => {
     return (
-      <div style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
+      <div ref={ref} style={content.bgImage ? { backgroundImage: `url(${content.bgImage})`, backgroundSize: "cover", backgroundPosition: "center" } : { backgroundColor: content.bgColor }} className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-center p-12 text-center relative pointer-events-none select-none">
         <div
                 className="w-75 h-110 rounded-xl pointer-events-auto select-text transition-colors duration-300 justify-center flex mb-20"
                 style={{ backgroundImage: `url(${content.posterImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
@@ -39,4 +41,8 @@ export default function LetterboxdCanvas({content, handleBlur}: {content: any, h
                 </footer>
               </div>
             </div>
-    )}
+    )
+  }
+);
+
+export default LetterboxdCanvas;

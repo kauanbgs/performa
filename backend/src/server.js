@@ -4,7 +4,7 @@ const cors = require("cors");
 
 // Configuração do CORS com origens permitidas
 const corsOptions = {
-  origin: "http://localhost:5173", //substituir no deploy
+  origin: "https://performa-one.vercel.app", //substituir no deploy
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
