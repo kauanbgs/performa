@@ -235,6 +235,15 @@ export default function Editor() {
             <Palette className="w-5 h-5" />
             <span className="text-[10px] font-medium">Estilo</span>
           </button>
+
+          {/* Botão Home — visível apenas no mobile */}
+          <Link
+            to="/home"
+            className="flex md:hidden flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Home</span>
+          </Link>
         </nav>
 
         <div className="hidden md:flex mt-auto">

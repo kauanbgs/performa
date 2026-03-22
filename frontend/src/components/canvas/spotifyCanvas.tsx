@@ -54,7 +54,7 @@ const SpotifyCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: any
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={(e) =>
-                  handleBlur("lyrics", e.currentTarget.textContent || "")
+                  handleBlur("lyrics", e.currentTarget.innerText || "")
                 }
                 className="font-primary text-xl w-60 text-black font-secondary font-bold leading-[1.3] text-left ml-5 mt-3 whitespace-pre-wrap outline-none focus:bg-white/10 rounded px-1 transition-colors"
                 style={{ wordBreak: "break-word" }}

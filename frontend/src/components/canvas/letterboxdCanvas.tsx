@@ -20,7 +20,7 @@ const LetterboxdCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: 
                       contentEditable
                       suppressContentEditableWarning
                       onBlur={(e) =>
-                        handleBlur("musicTitle", e.currentTarget.textContent || "")
+                        handleBlur("musicTitle", e.currentTarget.innerText || "")
                       }
                       className="font-primary text-xl text-white font-secondary font-semibold leading-[1.1] absolute bottom-33 outline-none focus:bg-white/10 rounded px-1 transition-colors"
                     >
