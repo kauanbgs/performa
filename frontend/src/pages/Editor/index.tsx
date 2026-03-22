@@ -656,21 +656,6 @@ export default function Editor() {
           </div>
         </div>
 
-        {/* Zoom Controls */}
-        <div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded">
-            <ZoomOut className="w-4 h-4" />
-          </button>
-          <span className="text-xs font-medium text-gray-700 w-10 text-center">
-            100%
-          </span>
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded">
-            <ZoomIn className="w-4 h-4" />
-          </button>
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded ml-1">
-            <Maximize className="w-4 h-4" />
-          </button>
-        </div>
       </main>
     </div>
   );
