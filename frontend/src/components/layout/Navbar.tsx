@@ -8,7 +8,7 @@ export const Navbar = () => {
         
         <div className={token ? "hidden md:flex gap-8 text-sm font-medium text-gray-600 ml-110" : "flex gap-8 text-sm font-medium text-gray-600 ml-110"}>
             <Link to="/planos" className="hover:text-black transition-colors">Planos</Link>
-            <Link to="/home" className="hover:text-black transition-colors">Criar</Link>
+            <Link to="/login" className="hover:text-black transition-colors">Criar</Link>
             <Link to="/ideias" className="hover:text-black transition-colors">Ideias</Link>
         </div>
 

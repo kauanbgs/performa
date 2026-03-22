@@ -306,7 +306,7 @@ export default function LandingPage() {
             nas redes sociais.
           </p>
           <Link
-            to="/home"
+            to="/login"
             className="bg-[#222] text-white px-10 py-4 rounded-full text-lg font-medium hover:bg-black transition-all hover:scale-105 inline-block font-primary tracking-wide"
           >
             Começar

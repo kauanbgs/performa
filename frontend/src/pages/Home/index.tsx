@@ -8,9 +8,11 @@ import api from "../../services/axios";
 export default function Home() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token") as string;
-  if (!token) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   const [projects, setProjects] = useState([]);
   
