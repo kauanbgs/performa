@@ -135,6 +135,9 @@ export default function Editor() {
   const handleDownload = async () => {
     setLoadingDownload(true);
     try {
+      // Salva antes de exportar
+      await api.updateProject(token, id, content);
+
       const response = await fetch("https://performa-i6sk.onrender.com/performa/export", {
         method: "POST",
         headers: { 
