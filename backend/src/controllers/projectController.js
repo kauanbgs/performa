@@ -72,7 +72,7 @@ module.exports = class projectController {
   }
 
   static async updateProject(req, res) {
-    const { title, ...content } = req.body;
+    const { title, previewImage, ...content} = req.body;
     const userId = req.userId;
 
     if (!title) {
@@ -86,7 +86,7 @@ module.exports = class projectController {
         where: {
           id: req.params.id
         },
-        data: { title, userId, content, updatedAt: new Date() }
+        data: { title, userId, content, updatedAt: new Date(), previewImage }
       });
       return res.status(200).json({ message: "Projeto atualizado com sucesso!", id: project.id });
     } catch (err) {

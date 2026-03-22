@@ -69,13 +69,14 @@ export default function Editor() {
     rating: 5,
     contentColor: "#808080",
     bgColor: "#ffffff",
+    previewImage: "/transparente.jpg",
   });
 
   useEffect(()=>{
     api.getProject(token, id).then((response: any) => {
       const projectData = response.data;
       if (projectData && projectData.content) {
-        setContent({ title: projectData.title, ...projectData.content });
+        setContent({ title: projectData.title, ...projectData.content, previewImage: projectData.content.previewImage || "/transparente.jpg" });
       }
     }).catch((err: any) => console.error("Erro ao carregar projeto:", err));
   },[id])
@@ -131,6 +132,8 @@ export default function Editor() {
       }
     }
   };
+
+
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const handleDownload = async () => {
@@ -155,9 +158,10 @@ export default function Editor() {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "performa_export.png";
+      a.download = `${activeMode}-${content.title}.png`;
       a.click();
       URL.revokeObjectURL(url);
+      setContent((prev) => ({ ...prev, previewImage: url }));
     } catch (err) {
       console.error(err);
     } finally {
@@ -424,18 +428,6 @@ export default function Editor() {
 
           {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
-              <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "poster")}
-                  className="hidden"
-                />
-              </label>
               <div className="flex items-center gap-2">
               <h1>Background:</h1>
               <button onClick={() => setContent((prev) => ({ ...prev, bgColor: "#808080", bgImage: "" }))} className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">Padrão</button>
@@ -457,6 +449,18 @@ export default function Editor() {
                     />
                   </div>
                 ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "bg")}
+                  className="hidden"
+                />
+              </label>
               </div>
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">

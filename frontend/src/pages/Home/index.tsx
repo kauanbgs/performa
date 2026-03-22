@@ -12,8 +12,24 @@ export default function Home() {
     navigate("/");
   }
 
+  useEffect(() => {
+  const getProjects = async () => {
+    try {
+      const profile = await api.getProfile(token);
+      const userId = profile.data.id;
+
+      const response = await api.getProjects(token, userId);
+      setLastProject(response.data[0]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  getProjects();
+}, [token]);
+
   const id = api.getProfile(token).then((response: any) => response.data.id);
   const [projects, setProjects] = useState([]);
+  const [lastProject, setLastProject] = useState({previewImage: ""});
   useEffect(() => {
     const getProjects = async () => {
       const response = await api.getProjects(token, id);
@@ -33,51 +49,56 @@ export default function Home() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
-        <header className="mb-20">
-          <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4">
-            Olá, {localStorage.getItem("name")}.
-          </h1>
-          <p className="text-gray-400 font-secondary text-lg">
-            O que vamos criar hoje?
-          </p>
-        </header>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12 items-start">
+          {/* Lado Esquerdo: Header e Cards */}
+          <div className="lg:col-span-8 flex flex-col">
+            <header className="mb-16">
+              <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4">
+                Olá, {localStorage.getItem("name")}.
+              </h1>
+              <p className="text-gray-400 font-secondary text-lg">
+                O que vamos criar hoje?
+              </p>
+            </header>
 
-        {/* Action Cards */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
-          {/* Card 1 */}
-          <div className="group cursor-pointer block" onClick={() => createProject("Post Musical")}>
-            <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
-            <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
-              Post Musical
-            </h3>
-            <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
-              Destaque letras, albuns ou músicas da forma em que você desejar.
-            </p>
+            {/* Action Cards */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Card 1 */}
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Musical")}>
+                <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
+                <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
+                  Post Musical
+                </h3>
+                <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
+                  Destaque letras, albuns ou músicas da forma em que você desejar.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Cinéfilo")}>
+                <Film className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
+                <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
+                  Post cinéfilo
+                </h3>
+                <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
+                  Poster Art, estrelas e críticas com o filme selecionado.
+                </p>
+              </div>
+            </section>
           </div>
 
-          {/* Card 2 */}
-          <div className="group cursor-pointer block" onClick={() => createProject("Post Cinéfilo")}>
-            <Film className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
-            <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
-              Post cinéfilo
-            </h3>
-            <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
-              Poster Art, estrelas e críticas com o filme selecionado.
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="group cursor-pointer block" onClick={() => createProject("Citações")}>
-            <Quote className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
-            <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
-              Citações
-            </h3>
-            <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
-              Se sinta um filósofo.
-            </p>
-          </div>
-        </section>
+          {/* Lado Direito: Banner do Último Projeto */}
+          {/* <div className="lg:col-span-4 flex flex-col justify-start w-full">
+            <section className="w-full flex flex-col">
+              <h2 className="text-xl font-primary text-gray-400 mb-4">
+                Preview do último projeto
+              </h2>
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => navigate(`/editor/${(lastProject as any).id}`)}>
+                <img src={(lastProject as any).previewImage || "/transparente.jpg"} alt="Último projeto" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+            </section>
+          </div> */}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           {/* Recent Projects (Left - 7 cols) */}
@@ -112,34 +133,6 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Inspiration (Right - 5 cols) */}
-          <div className="lg:col-span-5">
-            <h2 className="text-3xl font-primary text-gray-900 mb-10">
-              Inspiração
-            </h2>
-            <div className="space-y-6">
-              <div className="bg-[#1a1a1a] p-8 rounded-2xl text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
-                <Quote className="w-10 h-10 text-gray-700 mb-4 stroke-[1] group-hover:text-gray-600 transition-colors" />
-                <p className="font-primary text-xl italic mb-6 leading-relaxed text-gray-200">
-                  "Design is intelligence made visible."
-                </p>
-                <p className="text-[10px] text-gray-500 tracking-widest uppercase font-medium">
-                  Alina Wheeler
-                </p>
-              </div>
-
-              <div className="bg-[#1a1a1a] p-8 rounded-2xl text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
-                <Quote className="w-10 h-10 text-gray-700 mb-4 stroke-[1] group-hover:text-gray-600 transition-colors" />
-                <p className="font-primary text-xl italic mb-6 leading-relaxed text-gray-200">
-                  "Design is intelligence made visible."
-                </p>
-                <p className="text-[10px] text-gray-500 tracking-widest uppercase font-medium">
-                  Alina Wheeler
-                </p>
-              </div>
             </div>
           </div>
         </div>
