@@ -138,7 +138,7 @@ export default function Editor() {
   const handleDownload = async () => {
     setLoadingDownload(true);
     try {
-      const response = await fetch("http://localhost:5000/performa/export", {
+      const response = await fetch("https://performa-c5w1.onrender.com/performa/export", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

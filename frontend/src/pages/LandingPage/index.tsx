@@ -2,13 +2,16 @@ import { Link } from "react-router-dom";
 import { Music, LayoutTemplate, Type, Smartphone } from "lucide-react";
 import { Navbar } from "../../components/layout/Navbar";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  if (token) {
-    navigate("/home");
-  }
+  useEffect(() => {
+    if (token) {
+      navigate("/home");
+    }
+  }, [token, navigate]);
   return (
     <div className="relative font-sans overflow-x-hidden">
       {/* Estilos Globais e Animações */}
