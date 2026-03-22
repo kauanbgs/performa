@@ -50,7 +50,7 @@ export default function Editor() {
   }, 5000);
 };
 
-  const [activeTool, setActiveTool] = useState("design");
+  const [activeTool, setActiveTool] = useState<string | null>(window.innerWidth < 768 ? null : "design");
   const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
   const [loadingDownload, setLoadingDownload] = useState(false);
@@ -168,14 +168,14 @@ export default function Editor() {
     }
   };
   return (
-    <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
+    <div className="flex flex-col-reverse md:flex-row h-dvh bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
-      <aside className="w-[72px] bg-[#1a1a1a] flex flex-col items-center py-6 text-gray-400 z-20">
-        <Link to="/home" className="mb-8 font-secondary italic text-white text-xl font-bold flex items-center justify-center">
+      <aside className="w-full h-16 md:w-[72px] md:h-full bg-[#1a1a1a] flex flex-row md:flex-col items-center py-0 md:py-6 px-2 md:px-0 text-gray-400 z-30 shrink-0 justify-around md:justify-start">
+        <Link to="/home" className="hidden md:flex mb-8 font-secondary italic text-white text-xl font-bold items-center justify-center">
           p.me
         </Link>
 
-        <nav className="flex flex-col w-full gap-2">
+        <nav className="flex flex-row md:flex-col w-full md:w-auto justify-around md:justify-start md:gap-2 h-full items-center">
           <button
             onClick={() => setActiveTool("design")}
             className={`flex flex-col items-center gap-1.5 p-3 transition-colors ${
@@ -237,7 +237,7 @@ export default function Editor() {
           </button>
         </nav>
 
-        <div className="mt-auto">
+        <div className="hidden md:flex mt-auto">
           <Link
             to="/home"
             className="flex flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors"
@@ -248,8 +248,13 @@ export default function Editor() {
       </aside>
 
       {/* 2. Toolbox Panel */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col z-10 transition-all duration-300">
-        <div className="h-16 flex items-center px-6 border-b border-gray-100">
+      <div className={`
+        fixed md:relative bottom-16 md:bottom-0 left-0 
+        w-full md:w-80 h-[55vh] md:h-full 
+        bg-white border-t md:border-t-0 md:border-r border-gray-200 flex flex-col z-20 transition-transform duration-300
+        ${activeTool ? "translate-y-0" : "translate-y-full md:translate-y-0"}
+      `}>
+        <div className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-100 shrink-0">
           <h2 className="font-bold text-gray-800 text-sm tracking-wide uppercase">
             {activeTool === "design" && "Templates"}
             {activeTool === "text" && "Editor de Texto"}
@@ -257,6 +262,9 @@ export default function Editor() {
             {activeTool === "style" && "Estilo"}
             {activeTool === "elements" && "Elementos"}
           </h2>
+          <button className="md:hidden p-2 text-gray-400 hover:text-gray-800" onClick={() => setActiveTool(null)}>
+            ✕
+          </button>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
@@ -607,29 +615,29 @@ export default function Editor() {
       </div>
 
       {/* 3. Main Area */}
-      <main className="flex-1 flex flex-col relative">
+      <main className="flex-1 flex flex-col relative overflow-hidden w-full">
         {/* Top Bar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10">
-          <div className="flex items-center gap-4">
-            <input type="text" value={content.title} onChange={(e) => handleInputChange("title", e.target.value)} className="font-medium text-gray-900" />
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 z-10 shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            <input type="text" value={content.title} onChange={(e) => handleInputChange("title", e.target.value)} className="font-medium text-gray-900 w-24 md:w-auto bg-transparent border-none focus:outline-none" placeholder="Título" />
             <span className="text-gray-300">|</span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
-              <button onClick={handleSave} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
+              <button onClick={handleSave} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                Salvar
+                <span className="hidden md:inline">Salvar</span>
               </button>
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <div className="flex items-center gap-1 md:gap-2 shrink-0">
+            <button className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <Undo className="w-5 h-5" />
             </button>
-            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <button className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <Redo className="w-5 h-5" />
             </button>
-            <div className="h-6 w-px bg-gray-200 mx-2"></div>
-            <button onClick={handleDownload} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
+            <div className="hidden md:block h-6 w-px bg-gray-200 mx-2"></div>
+            <button onClick={handleDownload} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
               {loadingDownload ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Exportar
             </button>
@@ -637,13 +645,15 @@ export default function Editor() {
         </header>
 
         {/* Canvas Area */}
-        <div ref={divRef} className="flex-1 bg-gray-100 flex items-center justify-center p-12 overflow-hidden relative">
+        <div ref={divRef} className="flex-1 bg-gray-100 flex items-center justify-center p-4 md:p-12 overflow-hidden relative" onClick={() => { if(window.innerWidth < 768) setActiveTool(null) }}>
+          <div className="transform scale-[0.55] sm:scale-[0.7] md:scale-90 lg:scale-100 origin-center transition-transform duration-300">
             {activeMode === "spotify" && (
               <SpotifyCanvas ref={canvasRef} content={content} handleBlur={handleBlur} />
             )}
             {activeMode === "letterboxd" && (
               <LetterboxdCanvas content={content} handleBlur={handleBlur} />
             )}
+          </div>
         </div>
 
         {/* Zoom Controls */}
