@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 
 const defaultContent = {
   title: "Título",
-  musicTitle: "nome da música",
+  itemTitle: "nome da música",
   artist: "nome do artista",
   lyrics: "A letra vai aqui.",
   coverImage: "/transparente.jpg",
@@ -24,28 +24,33 @@ module.exports = class projectController {
 
     if (!title) {
       return res.status(400).json({
-        error: "Todos os campos devem ser preenchidos"
+        error: "Todos os campos devem ser preenchidos",
       });
     }
 
     try {
       const projectCount = await prisma.project.count({
-        where: { userId }
+        where: { userId },
       });
 
       if (projectCount >= 3) {
         return res.status(403).json({
-          error: "Limite de projetos atingido. Você pode ter no máximo 3 projetos."
+          error:
+            "Limite de projetos atingido. Você pode ter no máximo 3 projetos.",
         });
       }
 
       const project = await prisma.project.create({
-        data: { title, userId, content: content || defaultContent }
+        data: { title, userId, content: content || defaultContent },
       });
-      return res.status(201).json({ message: "Projeto criado com sucesso!", id: project.id });
+      return res
+        .status(201)
+        .json({ message: "Projeto criado com sucesso!", id: project.id });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Erro ao criar projeto", err: err.message });
+      return res
+        .status(500)
+        .json({ error: "Erro ao criar projeto", err: err.message });
     }
   }
 
@@ -55,53 +60,62 @@ module.exports = class projectController {
     try {
       const projects = await prisma.project.findMany({
         where: {
-          userId: userId
+          userId: userId,
         },
         orderBy: {
-          updatedAt: 'desc'
-        }
+          updatedAt: "desc",
+        },
       });
       return res.status(200).json(projects);
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ error: "Erro ao buscar projetos", err: err.message });
+      return res
+        .status(500)
+        .json({ error: "Erro ao buscar projetos", err: err.message });
     }
   }
 
   static async readProject(req, res) {
     try {
       const project = await prisma.project.findUnique({
-        where: { id: req.params.id }
+        where: { id: req.params.id },
       });
-      if (!project) return res.status(404).json({ error: "Projeto não encontrado" });
+      if (!project)
+        return res.status(404).json({ error: "Projeto não encontrado" });
       return res.status(200).json(project);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Erro ao buscar projeto", err: err.message });
+      return res
+        .status(500)
+        .json({ error: "Erro ao buscar projeto", err: err.message });
     }
   }
 
   static async updateProject(req, res) {
-    const { title, previewImage, ...content} = req.body;
+    const { title, previewImage, ...content } = req.body;
     const userId = req.userId;
 
     if (!title) {
       return res.status(400).json({
-        error: "Todos os campos devem ser preenchidos"
+        error: "Todos os campos devem ser preenchidos",
       });
     }
 
     try {
       const project = await prisma.project.update({
         where: {
-          id: req.params.id
+          id: req.params.id,
         },
-        data: { title, userId, content, updatedAt: new Date(), previewImage }
+        data: { title, userId, content, updatedAt: new Date(), previewImage },
       });
-      return res.status(200).json({ message: "Projeto atualizado com sucesso!", id: project.id });
+      return res
+        .status(200)
+        .json({ message: "Projeto atualizado com sucesso!", id: project.id });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Erro ao atualizar projeto", err: err.message });
+      return res
+        .status(500)
+        .json({ error: "Erro ao atualizar projeto", err: err.message });
     }
   }
 
@@ -112,12 +126,12 @@ module.exports = class projectController {
       browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
-
       });
 
       const page = await browser.newPage();
 
       await page.setViewport({
+
         width: 500,
         height: 700,
         deviceScaleFactor: 2,
@@ -127,15 +141,26 @@ module.exports = class projectController {
         window.INJECTED_EXPORT_DATA = data;
       }, req.body);
 
-      const frontendUrl = req.headers.origin || "https://performa-one.vercel.app";
+      const frontendUrl =
+        req.headers.origin || "https://performa-one.vercel.app";
       const url = `${frontendUrl}/export-template`;
-      await page.goto(url, { waitUntil: "networkidle0" });    
+      await page.goto(url, { waitUntil: "networkidle0" });
 
       await page.waitForSelector("#capture", { visible: true });
 
       const element = await page.$("#capture");
 
-      const image = await element.screenshot({ type: "png" });
+      const boundingBox = await element.boundingBox();
+
+      const image = await page.screenshot({
+        type: "png",
+        clip: {
+          x: boundingBox.x,
+          y: boundingBox.y,
+          width: boundingBox.width,
+          height: boundingBox.height,
+      },
+    });
 
       res.set({
         "Content-Type": "image/png",
@@ -144,11 +169,11 @@ module.exports = class projectController {
 
       res.send(image);
     } catch (error) {
-  console.error("ERRO REAL:", error);
+      console.error("ERRO REAL:", error);
       return res.status(500).json({
         error: "Erro ao gerar imagem",
         details: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
     } finally {
       if (browser) await browser.close();
@@ -161,7 +186,7 @@ module.exports = class projectController {
 
     try {
       const project = await prisma.project.findUnique({
-        where: { id }
+        where: { id },
       });
 
       if (!project) {
@@ -169,17 +194,21 @@ module.exports = class projectController {
       }
 
       if (project.userId !== userId) {
-        return res.status(403).json({ error: "Não autorizado a deletar este projeto" });
+        return res
+          .status(403)
+          .json({ error: "Não autorizado a deletar este projeto" });
       }
 
       await prisma.project.delete({
-        where: { id }
+        where: { id },
       });
 
       return res.status(200).json({ message: "Projeto deletado com sucesso!" });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Erro ao deletar projeto", err: err.message });
+      return res
+        .status(500)
+        .json({ error: "Erro ao deletar projeto", err: err.message });
     }
   }
-}
+};
