@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://performa-i6sk.onrender.com/performa",
+    baseURL: "https://69bf6cc23025be7f3bf94781--tangerine-begonia-459b00.netlify.app/performa",
 });
 
 const sheets = {
