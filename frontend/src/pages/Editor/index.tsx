@@ -150,11 +150,26 @@ export default function Editor() {
       }
 
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
 
+      const filename = `${activeMode}-${content.title || "performa"}.png`;
+
+      // No mobile, usa Web Share API para salvar direto na galeria/fotos
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], filename, { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: content.title || "performa",
+          });
+          return;
+        }
+      }
+
+      // Fallback: download normal (desktop)
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${activeMode}-${content.title}.png`;
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
       setContent((prev) => ({ ...prev, previewImage: url }));
