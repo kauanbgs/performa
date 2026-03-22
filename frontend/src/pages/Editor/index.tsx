@@ -115,11 +115,11 @@ export default function Editor() {
   };
 
   const handleBlur = (field: keyof typeof content, value: string) => {
-    setContent((prev) => ({ ...prev, [field]: value }));
+    setContent((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleInputChange = (field: keyof typeof content, value: string) => {
-    setContent((prev) => ({ ...prev, [field]: value }));
+    setContent((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleImageUpload = async (
@@ -132,19 +132,19 @@ export default function Editor() {
       switch (type) {
         case "cover":
           setUploadedCoverImages((prev) => [base64, ...prev]);
-          setContent((prev) => ({ ...prev, coverImage: base64 }));
+          setContent((prev: any) => ({ ...prev, coverImage: base64 }));
           break;
         case "bg":
           setUploadedBgImages((prev) => [base64, ...prev]);
-          setContent((prev) => ({ ...prev, bgImage: base64 }));
+          setContent((prev: any) => ({ ...prev, bgImage: base64 }));
           break;
         case "poster":
           setUploadedPosterImages((prev) => [base64, ...prev]);
-          setContent((prev) => ({ ...prev, posterImage: base64 }));
+          setContent((prev: any) => ({ ...prev, posterImage: base64 }));
           break;
         case "profile":
           setUploadedProfileImages((prev) => [base64, ...prev]);
-          setContent((prev) => ({ ...prev, profileImage: base64 }));
+          setContent((prev: any) => ({ ...prev, profileImage: base64 }));
           break;
       }
     }
@@ -183,7 +183,7 @@ export default function Editor() {
       a.download = `${activeMode}-${content.title}.png`;
       a.click();
       URL.revokeObjectURL(url);
-      setContent((prev) => ({ ...prev, previewImage: url }));
+      setContent((prev: any) => ({ ...prev, previewImage: url }));
     } catch (err) {
       console.error(err);
     } finally {
@@ -585,7 +585,7 @@ export default function Editor() {
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev) => ({ ...prev, coverImage: img }))
+                      setContent((prev: any) => ({ ...prev, coverImage: img }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -613,7 +613,7 @@ export default function Editor() {
                 <h1>Background:</h1>
                 <button
                   onClick={() =>
-                    setContent((prev) => ({
+                    setContent((prev: any) => ({
                       ...prev,
                       bgColor: "#808080",
                       bgImage: "",
@@ -630,7 +630,7 @@ export default function Editor() {
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev) => ({ ...prev, bgImage: img }))
+                      setContent((prev: any) => ({ ...prev, bgImage: img }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -750,7 +750,7 @@ export default function Editor() {
                 <h1>Background:</h1>
                 <button
                   onClick={() =>
-                    setContent((prev) => ({
+                    setContent((prev: any) => ({
                       ...prev,
                       bgColor: "#808080",
                       bgImage: "",
@@ -767,7 +767,7 @@ export default function Editor() {
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev) => ({ ...prev, bgImage: img }))
+                      setContent((prev: any) => ({ ...prev, bgImage: img }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -797,7 +797,7 @@ export default function Editor() {
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev) => ({ ...prev, posterImage: img }))
+                      setContent((prev: any) => ({ ...prev, posterImage: img }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -827,7 +827,7 @@ export default function Editor() {
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev) => ({ ...prev, profileImage: img }))
+                      setContent((prev: any) => ({ ...prev, profileImage: img }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -869,7 +869,7 @@ export default function Editor() {
                     type="color"
                     value={content.contentColor}
                     onChange={(e) =>
-                      setContent((prev) => ({
+                      setContent((prev: any) => ({
                         ...prev,
                         contentColor: e.target.value,
                       }))
@@ -891,7 +891,7 @@ export default function Editor() {
                     type="color"
                     value={content.bgColor}
                     onChange={(e) =>
-                      setContent((prev) => ({
+                      setContent((prev: any) => ({
                         ...prev,
                         bgColor: e.target.value,
                       }))
@@ -909,7 +909,7 @@ export default function Editor() {
                     type="checkbox"
                     checked={content.glassmorphism}
                     onChange={(e) =>
-                      setContent((prev) => ({
+                      setContent((prev: any) => ({
                         ...prev,
                         glassmorphism: e.target.checked,
                       }))
@@ -921,7 +921,7 @@ export default function Editor() {
                       type="color"
                       value={content.glassColor}
                       onChange={(e) =>
-                        setContent((prev) => ({
+                        setContent((prev: any) => ({
                           ...prev,
                           glassColor: e.target.value,
                         }))
