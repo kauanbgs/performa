@@ -10,9 +10,6 @@ import {
   Undo,
   Redo,
   Download,
-  ZoomIn,
-  ZoomOut,
-  Maximize,
   Save,
   Loader2,
 } from "lucide-react";

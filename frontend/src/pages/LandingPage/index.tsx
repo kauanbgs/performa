@@ -87,6 +87,14 @@ export default function LandingPage() {
               musicais em segundos. Minimalista, elegante e pronto para
               compartilhar.
             </p>
+
+            {/* CTA Button — visível apenas no mobile */}
+            <Link
+              to="/login"
+              className="mt-8 lg:hidden bg-[#222] text-white px-8 py-3.5 rounded-full text-base font-medium hover:bg-black transition-all hover:scale-105 font-primary tracking-wide shadow-lg font-secondary"
+            >
+              Começar agora →
+            </Link>
           </div>
 
           {/* Lado Direito: Cards Flutuantes */}
