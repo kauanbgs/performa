@@ -117,8 +117,8 @@ module.exports = class projectController {
         window.INJECTED_EXPORT_DATA = data;
       }, req.body);
 
-      const url = `https://performa-i6sk.onrender.com/performa/export-template`;
-
+      const frontendUrl = req.headers.origin || "https://performa-one.vercel.app";
+      const url = `${frontendUrl}/export-template`;
       await page.goto(url, { waitUntil: "networkidle0" });    
 
       await page.waitForSelector("#capture", { visible: true });
