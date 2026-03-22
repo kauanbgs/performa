@@ -138,7 +138,7 @@ export default function Editor() {
   const handleDownload = async () => {
     setLoadingDownload(true);
     try {
-      const response = await fetch("https://tangerine-begonia-459b00.netlify.app/performa/export", {
+      const response = await fetch("https://performa-i6sk.onrender.com/performa/export", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

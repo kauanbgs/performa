@@ -117,7 +117,7 @@ module.exports = class projectController {
         window.INJECTED_EXPORT_DATA = data;
       }, req.body);
 
-      const url = `https://tangerine-begonia-459b00.netlify.app/performa/export-template`;
+      const url = `https://performa-i6sk.onrender.com/performa/export-template`;
 
       await page.goto(url, { waitUntil: "networkidle0" });    
 
