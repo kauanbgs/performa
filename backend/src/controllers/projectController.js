@@ -102,7 +102,7 @@ module.exports = class projectController {
       browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        
+
       });
 
       const page = await browser.newPage();
@@ -117,7 +117,7 @@ module.exports = class projectController {
         window.INJECTED_EXPORT_DATA = data;
       }, req.body);
 
-      const url = `https://performa-c5w1.onrender.com/export-template`;
+      const url = `https://performa-i6sk.onrender.com/export-template`;
 
       await page.goto(url, { waitUntil: "networkidle0" });    
 
