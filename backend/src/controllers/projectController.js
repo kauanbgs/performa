@@ -29,6 +29,16 @@ module.exports = class projectController {
     }
 
     try {
+      const projectCount = await prisma.project.count({
+        where: { userId }
+      });
+
+      if (projectCount >= 3) {
+        return res.status(403).json({
+          error: "Limite de projetos atingido. Você pode ter no máximo 3 projetos."
+        });
+      }
+
       const project = await prisma.project.create({
         data: { title, userId, content: content || defaultContent }
       });
@@ -142,6 +152,34 @@ module.exports = class projectController {
       });
     } finally {
       if (browser) await browser.close();
+    }
+  }
+
+  static async deleteProject(req, res) {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    try {
+      const project = await prisma.project.findUnique({
+        where: { id }
+      });
+
+      if (!project) {
+        return res.status(404).json({ error: "Projeto não encontrado" });
+      }
+
+      if (project.userId !== userId) {
+        return res.status(403).json({ error: "Não autorizado a deletar este projeto" });
+      }
+
+      await prisma.project.delete({
+        where: { id }
+      });
+
+      return res.status(200).json({ message: "Projeto deletado com sucesso!" });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao deletar projeto", err: err.message });
     }
   }
 }

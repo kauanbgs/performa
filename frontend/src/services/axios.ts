@@ -12,6 +12,7 @@ const sheets = {
   getProject: (token: string, id: string) => api.get(`/project/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
   postProject: (token: string, project: any) => api.post("/project", project, { headers: { Authorization: `Bearer ${token}` } }),
   updateProject: (token: string, id: string, project: any) => api.put(`/project/${id}`, project, { headers: { Authorization: `Bearer ${token}` } }),
+  deleteProject: (token: string, id: string) => api.delete(`/project/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
 }
 
 export default sheets;

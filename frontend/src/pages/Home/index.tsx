@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Film } from "lucide-react";
+import { Music, Clapperboard, Film, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -14,7 +14,9 @@ export default function Home() {
     }
   }, [token, navigate]);
 
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -32,14 +34,69 @@ export default function Home() {
   }, [token]);
 
   const createProject = (title: string) => {
+    if (projects.length >= 3) {
+      alert("Você atingiu o limite de 3 projetos.");
+      return;
+    }
     const defaultTitle = title || "Novo Projeto";
     api.postProject(token, { title: defaultTitle }).then((response: any) => {
       navigate(`/editor/${response.data.id}`);
-    }).catch((err: any) => console.error("Erro ao criar projeto:", err));
+    }).catch((err: any) => {
+      const msg = err?.response?.data?.error;
+      if (err?.response?.status === 403) {
+        alert(msg || "Limite de projetos atingido.");
+      } else {
+        console.error("Erro ao criar projeto:", err);
+      }
+    });
   };
+
+  const handleDelete = async (id: string) => {
+    setDeleting(true);
+    try {
+      await api.deleteProject(token, id);
+      setProjects((prev: any[]) => prev.filter((p: any) => p.id !== id));
+      setConfirmDeleteId(null);
+    } catch (err) {
+      console.error("Erro ao deletar projeto:", err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans">
       <Navbar />
+
+      {/* Modal de Confirmação */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center">
+            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="w-6 h-6 text-red-500" />
+            </div>
+            <h3 className="text-xl font-primary text-gray-900 mb-2">Deletar projeto?</h3>
+            <p className="text-gray-500 font-secondary text-sm mb-6 leading-relaxed">
+              Essa ação é irreversível. O projeto será permanentemente deletado.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDeleteId)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-60"
+              >
+                {deleting ? "Deletando..." : "Deletar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12 items-start">
@@ -79,18 +136,6 @@ export default function Home() {
               </div>
             </section>
           </div>
-
-          {/* Lado Direito: Banner do Último Projeto */}
-          {/* <div className="lg:col-span-4 flex flex-col justify-start w-full">
-            <section className="w-full flex flex-col">
-              <h2 className="text-xl font-primary text-gray-400 mb-4">
-                Preview do último projeto
-              </h2>
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => navigate(`/editor/${(lastProject as any).id}`)}>
-                <img src={(lastProject as any).previewImage || "/transparente.jpg"} alt="Último projeto" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-            </section>
-          </div> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -100,30 +145,39 @@ export default function Home() {
               <h2 className="text-3xl font-primary text-gray-900">
                 Projetos Recentes
               </h2>
-              {/* <button className="text-xs font-medium text-gray-400 hover:text-gray-900 tracking-wider transition-colors uppercase">
-                Ver todos
-              </button> */}
             </div>
 
-            <div className="space-y-8">
-              {/* Project Items */}
+            <div className="space-y-2">
               {projects.map((project: any) => (
                 <div
                   key={project.id}
-                  className="flex items-center group cursor-pointer"
-                  onClick={() => navigate(`/editor/${project.id}`)}
+                  className="flex items-center group rounded-xl hover:bg-gray-50 transition-colors px-2 py-3"
                 >
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-gray-100 transition-colors border border-gray-100">
-                    <Clapperboard className="w-5 h-5 stroke-[1.5]" />
+                  <div
+                    className="flex items-center flex-1 cursor-pointer"
+                    onClick={() => navigate(`/editor/${project.id}`)}
+                  >
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-white transition-colors border border-gray-100 shrink-0">
+                      <Clapperboard className="w-5 h-5 stroke-[1.5]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-primary text-xl text-gray-900 mb-1 truncate">
+                        {project.title}
+                      </h4>
+                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+                        {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-primary text-xl text-gray-900 mb-1">
-                      {project.title}
-                    </h4>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                      {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
-                    </p>
-                  </div>
+
+                  {/* Botão de deletar */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
+                    className="ml-4 p-2 text-gray-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                    title="Deletar projeto"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -133,3 +187,4 @@ export default function Home() {
     </div>
   );
 }
+

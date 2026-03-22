@@ -9,6 +9,7 @@ router.get("/projects/user/:id", auth, projectController.readProjectsByUserId);
 router.get("/project/:id", auth, projectController.readProject);
 router.put("/project/:id", auth, projectController.updateProject);
 router.post("/export", auth, projectController.exportProject);
+router.delete("/project/:id", auth, projectController.deleteProject);
 
 //      CONTROLLER USER     //
 router.post("/user", userController.createUser);
