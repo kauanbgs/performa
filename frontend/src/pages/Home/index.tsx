@@ -11,10 +11,12 @@ export default function Home() {
   if (!token) {
     navigate("/");
   }
+
+  const id = api.getProfile(token).then((response: any) => response.data.id);
   const [projects, setProjects] = useState([]);
   useEffect(() => {
     const getProjects = async () => {
-      const response = await api.getProjects(token);
+      const response = await api.getProjects(token, id);
       setProjects(response.data);
     };
     getProjects();
@@ -95,6 +97,7 @@ export default function Home() {
                 <div
                   key={project.id}
                   className="flex items-center group cursor-pointer"
+                  onClick={() => navigate(`/editor/${project.id}`)}
                 >
                   <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-gray-100 transition-colors border border-gray-100">
                     <Clapperboard className="w-5 h-5 stroke-[1.5]" />
@@ -104,12 +107,9 @@ export default function Home() {
                       {project.title}
                     </h4>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                      Cinema - Há 2 horas
+                      {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
                     </p>
                   </div>
-                  {/* <button className="p-2 text-gray-300 hover:text-gray-900 transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button> */}
                 </div>
               ))}
             </div>

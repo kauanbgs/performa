@@ -13,6 +13,8 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize,
+  Save,
+  Loader2,
 } from "lucide-react";
 import "../../index.css";
 import React, { useState, useRef, useEffect } from "react";
@@ -33,13 +35,30 @@ export default function Editor() {
 
   useEffect(()=>{
     api.getProject(token, id).then((response: any) => {
-      console.log(response.data);
       setContent(response.data);
     });
   },[])
 
+
+  const handleSave = async () => {
+  if (loading) return;
+
+  setLoading(true);
+
+  try {
+    await api.updateProject(token, id, content);
+  } catch (err) {
+    console.error(err);
+  }
+
+  setTimeout(() => {
+    setLoading(false);
+  }, 5000);
+};
+
   const [activeTool, setActiveTool] = useState("design");
   const [activeMode, setActiveMode] = useState("spotify ");
+  const [loading, setLoading] = useState(false);
   const [content, setContent] = useState({
     title: "",
     artist: "",
@@ -496,11 +515,13 @@ export default function Editor() {
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10">
           <div className="flex items-center gap-4">
-            <span className="font-medium text-gray-900">{content.title}</span>
+            <input type="text" value={content.title} onChange={(e) => handleInputChange("title", e.target.value)} className="font-medium text-gray-900" />
             <span className="text-gray-300">|</span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full border border-gray-400"></span>{" "}
-              Salvo
+              <button onClick={handleSave} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Salvar
+              </button>
             </span>
           </div>
 

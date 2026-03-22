@@ -23,21 +23,48 @@ module.exports = class projectController {
     }
   }
 
-  static async readProject(req, res) {
+  static async readProjectsByUserId(req, res) {
+    const userId = req.userId;
+
     try {
-      const project = await prisma.project.findUnique({
+      const projects = await prisma.project.findMany({
         where: {
-          id: req.params.id
+          userId: userId
+        },
+        orderBy: {
+          updatedAt: 'desc'
         }
       });
-      return res.status(200).json(project);
+      return res.status(200).json(projects);
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ error: "Erro ao buscar projeto", err: err.message });
+      return res.status(500).json({ error: "Erro ao buscar projetos", err: err.message });
     }
   }
-  
-  static async 
+
+  static async updateProject(req, res) {
+    const { title, ...content } = req.body;
+    const userId = req.userId;
+
+    if (!title) {
+      return res.status(400).json({
+        error: "Todos os campos devem ser preenchidos"
+      });
+    }
+
+    try {
+      const project = await prisma.project.update({
+        where: {
+          id: req.params.id
+        },
+        data: { title, userId, content, updatedAt: new Date() }
+      });
+      return res.status(200).json({ message: "Projeto atualizado com sucesso!", id: project.id });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao atualizar projeto", err: err.message });
+    }
+  }
 
   static async exportProject(req, res) {
     let browser;
