@@ -31,11 +31,11 @@ const SpotifyCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: any
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={(e) =>
-                      handleBlur("title", e.currentTarget.textContent || "")
+                      handleBlur("musicTitle", e.currentTarget.textContent || "")
                     }
                     className="font-primary text-[13px] text-black font-secondary font-bold leading-[1.1] mt-6 outline-none focus:bg-white/10 rounded px-1 -ml-1 transition-colors"
                   >
-                    {content.title}
+                    {content.musicTitle}
                   </h1>
                   <h2
                     contentEditable
@@ -62,7 +62,7 @@ const SpotifyCanvas = forwardRef<HTMLDivElement, { content: any; handleBlur: any
                 {content.lyrics}
               </p>
               <footer className="ml-4 absolute">
-                <img className="w-28 h-28" src="spotify.png" alt="spotify" />
+                <img className="w-28 h-28" src="/spotify.png" alt="spotify logo" />
               </footer>
             </div>
           </div>

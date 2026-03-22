@@ -13,7 +13,7 @@ generator client {
 
 model Project {
   id           String   @id @default(uuid())
-  title        String   
+  title        String
   mode         String   @default("free")
   content      Json     @default("{}")
   previewImage String?  @default("")

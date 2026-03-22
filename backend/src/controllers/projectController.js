@@ -1,9 +1,25 @@
 const prisma = require("../connect");
 const puppeteer = require("puppeteer");
 
+const defaultContent = {
+  title: "Título",
+  musicTitle: "nome da música",
+  artist: "nome do artista",
+  lyrics: "A letra vai aqui.",
+  coverImage: "/transparente.jpg",
+  bgImage: "/transparente.jpg",
+  glassmorphism: true,
+  glassColor: "#ffffff",
+  posterImage: "/fundoLogin.png",
+  profileImage: "/beatles.jpg",
+  rating: 5,
+  contentColor: "#000000",
+  bgColor: "#ffffff",
+};
+
 module.exports = class projectController {
   static async createProject(req, res) {
-    const { title } = req.body;
+    const { title, content } = req.body;
     const userId = req.userId;
 
     if (!title) {
@@ -14,7 +30,7 @@ module.exports = class projectController {
 
     try {
       const project = await prisma.project.create({
-        data: { title, userId }
+        data: { title, userId, content: content || defaultContent }
       });
       return res.status(201).json({ message: "Projeto criado com sucesso!", id: project.id });
     } catch (err) {
@@ -39,6 +55,19 @@ module.exports = class projectController {
     } catch (err) {
       console.log(err);
       return res.status(500).json({ error: "Erro ao buscar projetos", err: err.message });
+    }
+  }
+
+  static async readProject(req, res) {
+    try {
+      const project = await prisma.project.findUnique({
+        where: { id: req.params.id }
+      });
+      if (!project) return res.status(404).json({ error: "Projeto não encontrado" });
+      return res.status(200).json(project);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Erro ao buscar projeto", err: err.message });
     }
   }
 
@@ -83,9 +112,11 @@ module.exports = class projectController {
         deviceScaleFactor: 2,
       });
 
-      const encodedData = encodeURIComponent(JSON.stringify(req.body));
+      await page.evaluateOnNewDocument((data) => {
+        window.INJECTED_EXPORT_DATA = data;
+      }, req.body);
 
-      const url = `http://localhost:5173/export-template?data=${encodedData}`;
+      const url = `http://localhost:5173/export-template`;
 
       await page.goto(url, { waitUntil: "networkidle0" });    
 

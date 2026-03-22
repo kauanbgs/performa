@@ -33,11 +33,6 @@ export default function Editor() {
 
   const { id } = useParams();
 
-  useEffect(()=>{
-    api.getProject(token, id).then((response: any) => {
-      setContent(response.data);
-    });
-  },[])
 
 
   const handleSave = async () => {
@@ -57,10 +52,12 @@ export default function Editor() {
 };
 
   const [activeTool, setActiveTool] = useState("design");
-  const [activeMode, setActiveMode] = useState("spotify ");
+  const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
+  const [loadingDownload, setLoadingDownload] = useState(false);
   const [content, setContent] = useState({
     title: "",
+    musicTitle: "",
     artist: "",
     lyrics: "",
     coverImage: "",
@@ -73,8 +70,24 @@ export default function Editor() {
     contentColor: "#808080",
     bgColor: "#ffffff",
   });
-  const [uploadedImages, setUploadedImages] = useState<string[]>([
-    "radiohead.jpg",
+
+  useEffect(()=>{
+    api.getProject(token, id).then((response: any) => {
+      const projectData = response.data;
+      if (projectData && projectData.content) {
+        setContent({ title: projectData.title, ...projectData.content });
+      }
+    }).catch((err: any) => console.error("Erro ao carregar projeto:", err));
+  },[id])
+
+
+  const [uploadedCoverImages, setUploadedCoverImages] = useState<string[]>([
+  ]);
+  const [uploadedBgImages, setUploadedBgImages] = useState<string[]>([
+  ]);
+  const [uploadedPosterImages, setUploadedPosterImages] = useState<string[]>([
+  ]);
+  const [uploadedProfileImages, setUploadedProfileImages] = useState<string[]>([
   ]);
 
   const fileToBase64 = (file: File): Promise<string> => {
@@ -94,31 +107,63 @@ export default function Editor() {
     setContent((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: "cover" | "bg" | "poster" | "profile") => {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await fileToBase64(file);
-      setUploadedImages((prev) => [base64, ...prev]);
-      setContent((prev) => ({ ...prev, coverImage: base64 }));
+      switch (type) {
+        case "cover":
+          setUploadedCoverImages((prev) => [base64, ...prev]);
+          setContent((prev) => ({ ...prev, coverImage: base64 }));
+          break;
+        case "bg":
+          setUploadedBgImages((prev) => [base64, ...prev]);
+          setContent((prev) => ({ ...prev, bgImage: base64 }));
+          break;
+        case "poster":
+          setUploadedPosterImages((prev) => [base64, ...prev]);
+          setContent((prev) => ({ ...prev, posterImage: base64 }));
+          break;
+        case "profile":
+          setUploadedProfileImages((prev) => [base64, ...prev]);
+          setContent((prev) => ({ ...prev, profileImage: base64 }));
+          break;
+      }
     }
   };
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const handleDownload = async () => {
-    const response = await fetch("http://localhost:5000/performa/export", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(content),
-    });
+    setLoadingDownload(true);
+    try {
+      const response = await fetch("http://localhost:5000/performa/export", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify({ ...content, template: activeMode }),
+      });
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+      if (!response.ok) {
+        console.error("Erro na exportação:", await response.text());
+        return;
+      }
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "spotify.png";
-    a.click();
-};
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "performa_export.png";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingDownload(false);
+    }
+  };
   return (
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
@@ -244,8 +289,8 @@ export default function Editor() {
                 </label>
                 <input
                   type="text"
-                  value={content.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  value={content.musicTitle}
+                  onChange={(e) => handleInputChange("musicTitle", e.target.value)}
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Nome da música"
                 />
@@ -283,34 +328,35 @@ export default function Editor() {
                 </label>
                 <input
                   type="text"
-                  value={content.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  value={content.musicTitle}
+                  onChange={(e) => handleInputChange("musicTitle", e.target.value)}
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Nome do filme"
                 />
               </div>
-              
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Avaliação
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={5}
+                  value={content.rating}
+                  onChange={(e) => handleInputChange("rating", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Estrelas"
+                />
+              </div>
             </div>
             ) 
           )}
 
           {activeTool === "uploads" && activeMode === "spotify" && (
             <div className="flex flex-col gap-6">
-              <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </label>
               <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedImages.map((img, index) => (
+                {uploadedCoverImages.map((img, index) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -324,8 +370,19 @@ export default function Editor() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
                 ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "cover")}
+                  className="hidden"
+                />
+              </label>
               </div>
               <div className="flex items-center gap-2">
               <h1>Background:</h1>
@@ -333,7 +390,7 @@ export default function Editor() {
               </div>
               
               <div className="grid grid-cols-2 gap-2">
-                {uploadedImages.map((img, index) => (
+                {uploadedBgImages.map((img, index) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -349,6 +406,18 @@ export default function Editor() {
                   </div>
                   
                 ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "bg")}
+                  className="hidden"
+                />
+              </label>
               </div>
             </div>
           )}
@@ -363,7 +432,7 @@ export default function Editor() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={(e) => handleImageUpload(e, "poster")}
                   className="hidden"
                 />
               </label>
@@ -373,7 +442,7 @@ export default function Editor() {
               </div>
               
               <div className="grid grid-cols-2 gap-2">
-                {uploadedImages.map((img, index) => (
+                {uploadedBgImages.map((img, index) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -391,7 +460,7 @@ export default function Editor() {
               </div>
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedImages.map((img, index) => (
+                {uploadedPosterImages.map((img: string, index: number) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -406,10 +475,22 @@ export default function Editor() {
                     />
                   </div>
                 ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "poster")}
+                  className="hidden"
+                />
+              </label>
               </div>
               <h1>Foto de perfil:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedImages.map((img, index) => (
+                {uploadedProfileImages.map((img: string, index: number) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -424,6 +505,18 @@ export default function Editor() {
                     />
                   </div>
                 ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                <div className="flex flex-col items-center gap-2 text-gray-500">
+                  <Download className="w-6 h-6 rotate-180" />
+                  <span className="text-sm font-medium">Fazer Upload</span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "profile")}
+                  className="hidden"
+                />
+              </label>
               </div>
             </div>
           )}
@@ -534,7 +627,7 @@ export default function Editor() {
             </button>
             <div className="h-6 w-px bg-gray-200 mx-2"></div>
             <button onClick={handleDownload} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
-              <Download className="w-4 h-4" />
+              {loadingDownload ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Exportar
             </button>
           </div>

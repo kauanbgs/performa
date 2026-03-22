@@ -6,6 +6,7 @@ const auth = require("../middlewares/auth");
 //      CONTROLLER PROJECT     //
 router.post("/project", auth, projectController.createProject);
 router.get("/projects/user/:id", auth, projectController.readProjectsByUserId);
+router.get("/project/:id", auth, projectController.readProject);
 router.put("/project/:id", auth, projectController.updateProject);
 router.post("/export", auth, projectController.exportProject);
 

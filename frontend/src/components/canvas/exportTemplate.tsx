@@ -1,11 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import SpotifyCanvas from "./spotifyCanvas";
+import LetterboxdCanvas from "./letterboxdCanvas";
+
+interface ExportData {
+  template: string;
+  [key: string]: any;
+}
 
 export default function ExportTemplate() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<ExportData | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if ((window as any).INJECTED_EXPORT_DATA) {
+      setData((window as any).INJECTED_EXPORT_DATA);
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("data");
     if (raw) {
@@ -17,7 +27,12 @@ export default function ExportTemplate() {
 
   return (
     <div id="capture">
-      <SpotifyCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      {data.template === "spotify" && (
+        <SpotifyCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      )}
+      {data.template === "letterboxd" && (
+        <LetterboxdCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      )}
     </div>
   );
 }
