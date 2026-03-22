@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import api from "../../services/axios";
+import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 
 export default function Editor() {
   const navigate = useNavigate();
@@ -29,31 +30,31 @@ export default function Editor() {
 
   const { id } = useParams() as { id: string };
 
-
-
   const handleSave = async () => {
-  if (loading) return;
+    if (loading) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    await api.updateProject(token, id, content);
-  } catch (err) {
-    console.error(err);
-  }
+    try {
+      await api.updateProject(token, id, content);
+    } catch (err) {
+      console.error(err);
+    }
 
-  setTimeout(() => {
-    setLoading(false);
-  }, 5000);
-};
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  };
 
-  const [activeTool, setActiveTool] = useState<string | null>(window.innerWidth < 768 ? null : "design");
+  const [activeTool, setActiveTool] = useState<string | null>(
+    window.innerWidth < 768 ? null : "design",
+  );
   const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
   const [loadingDownload, setLoadingDownload] = useState(false);
-  const [content, setContent] = useState({
+  const [content, setContent] = useState<any>({
     title: "",
-    musicTitle: "",
+    itemTitle: "",
     artist: "",
     lyrics: "",
     coverImage: "",
@@ -64,37 +65,54 @@ export default function Editor() {
     profileImage: "",
     rating: 5,
     contentColor: "#808080",
-    bgColor: "#ffffff",
+    bgColor: "#e5ddd5",
     previewImage: "/transparente.jpg",
+    messages: [
+      { text: "Oi! Tudo bem?", type: "received", time: "10:42" },
+      { text: "Tudo sim! E você?", type: "sent", time: "10:43" },
+      { text: "O que você vai fazer hoje?", type: "received", time: "10:44" },
+      {
+        text: "Ainda não sei, talvez saia mais tarde 😄",
+        type: "sent",
+        time: "10:45",
+      },
+    ],
   });
 
-  useEffect(()=>{
-    api.getProject(token, id).then((response: any) => {
-      const projectData = response.data;
-      if (projectData && projectData.content) {
-        setContent({ title: projectData.title, ...projectData.content, previewImage: projectData.content.previewImage || "/transparente.jpg" });
-      }
-    }).catch((err: any) => console.error("Erro ao carregar projeto:", err));
-  },[id])
+  useEffect(() => {
+    api
+      .getProject(token, id)
+      .then((response: any) => {
+        const projectData = response.data;
+        if (projectData && projectData.content) {
+          setContent({
+            title: projectData.title,
+            ...projectData.content,
+            previewImage:
+              projectData.content.previewImage || "/transparente.jpg",
+          });
+        }
+      })
+      .catch((err: any) => console.error("Erro ao carregar projeto:", err));
+  }, [id]);
 
-
-  const [uploadedCoverImages, setUploadedCoverImages] = useState<string[]>([
-  ]);
-  const [uploadedBgImages, setUploadedBgImages] = useState<string[]>([
-  ]);
-  const [uploadedPosterImages, setUploadedPosterImages] = useState<string[]>([
-  ]);
-  const [uploadedProfileImages, setUploadedProfileImages] = useState<string[]>([
-  ]);
+  const [uploadedCoverImages, setUploadedCoverImages] = useState<string[]>([]);
+  const [uploadedBgImages, setUploadedBgImages] = useState<string[]>([]);
+  const [uploadedPosterImages, setUploadedPosterImages] = useState<string[]>(
+    [],
+  );
+  const [uploadedProfileImages, setUploadedProfileImages] = useState<string[]>(
+    [],
+  );
 
   const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-  });
-};
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+  };
 
   const handleBlur = (field: keyof typeof content, value: string) => {
     setContent((prev) => ({ ...prev, [field]: value }));
@@ -104,7 +122,10 @@ export default function Editor() {
     setContent((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: "cover" | "bg" | "poster" | "profile") => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "cover" | "bg" | "poster" | "profile",
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await fileToBase64(file);
@@ -129,7 +150,6 @@ export default function Editor() {
     }
   };
 
-
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const handleDownload = async () => {
@@ -138,14 +158,17 @@ export default function Editor() {
       // Salva antes de exportar
       await api.updateProject(token, id, content);
 
-      const response = await fetch("https://performa-i6sk.onrender.com/performa/export", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` 
+      const response = await fetch(
+        "https://performa-i6sk.onrender.com/performa/export",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ ...content, template: activeMode }),
         },
-        body: JSON.stringify({ ...content, template: activeMode }),
-      });
+      );
 
       if (!response.ok) {
         console.error("Erro na exportação:", await response.text());
@@ -171,7 +194,10 @@ export default function Editor() {
     <div className="flex flex-col-reverse md:flex-row h-dvh bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
       <aside className="w-full h-16 md:w-[72px] md:h-full bg-[#1a1a1a] flex flex-row md:flex-col items-center py-0 md:py-6 px-2 md:px-0 text-gray-400 z-30 shrink-0 justify-around md:justify-start">
-        <Link to="/home" className="hidden md:flex mb-8 font-secondary italic text-white text-xl font-bold items-center justify-center">
+        <Link
+          to="/home"
+          className="hidden md:flex mb-8 font-secondary italic text-white text-xl font-bold items-center justify-center"
+        >
           p.me
         </Link>
 
@@ -236,7 +262,6 @@ export default function Editor() {
             <span className="text-[10px] font-medium">Estilo</span>
           </button>
 
-          {/* Botão Home — visível apenas no mobile */}
           <Link
             to="/home"
             className="flex md:hidden flex-col items-center gap-1.5 p-3 hover:text-white hover:bg-white/5 transition-colors"
@@ -257,12 +282,14 @@ export default function Editor() {
       </aside>
 
       {/* 2. Toolbox Panel */}
-      <div className={`
+      <div
+        className={`
         fixed md:relative bottom-16 md:bottom-0 left-0 
         w-full md:w-80 h-[55vh] md:h-full 
         bg-white border-t md:border-t-0 md:border-r border-gray-200 flex flex-col z-20 transition-transform duration-300
         ${activeTool ? "translate-y-0" : "translate-y-full md:translate-y-0"}
-      `}>
+      `}
+      >
         <div className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-100 shrink-0">
           <h2 className="font-bold text-gray-800 text-sm tracking-wide uppercase">
             {activeTool === "design" && "Templates"}
@@ -271,7 +298,10 @@ export default function Editor() {
             {activeTool === "style" && "Estilo"}
             {activeTool === "elements" && "Elementos"}
           </h2>
-          <button className="md:hidden p-2 text-gray-400 hover:text-gray-800" onClick={() => setActiveTool(null)}>
+          <button
+            className="md:hidden p-2 text-gray-400 hover:text-gray-800"
+            onClick={() => setActiveTool(null)}
+          >
             ✕
           </button>
         </div>
@@ -280,8 +310,13 @@ export default function Editor() {
           {activeTool === "design" && (
             <div className="grid grid-cols-2 gap-4">
               {/* Template Item 1 */}
-              <button onClick={() => setActiveMode("spotify")} className="col-span-1 flex flex-col gap-2 group cursor-pointer">
-                <div className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "spotify" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}>
+              <button
+                onClick={() => setActiveMode("spotify")}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "spotify" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
                   <Disc className="w-8 h-8 text-gray-400" />
                 </div>
                 <span className="text-xs font-medium text-gray-900 text-center">
@@ -289,28 +324,47 @@ export default function Editor() {
                 </span>
               </button>
               {/* Template Item 2 */}
-              <button onClick={() => setActiveMode("letterboxd")} className="col-span-1 flex flex-col gap-2 group cursor-pointer">
-                <div className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "letterboxd" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}>
+              <button
+                onClick={() => setActiveMode("letterboxd")}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "letterboxd" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
                   <Film className="w-8 h-8 text-gray-400" />
                 </div>
                 <span className="text-xs font-medium text-gray-900 text-center">
                   Fake Letterboxd
                 </span>
               </button>
-              
+              {/* Template Item 2 */}
+              <button
+                onClick={() => setActiveMode("whatsapp")}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "whatsapp" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
+                  <Film className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Fake Whatsapp
+                </span>
+              </button>
             </div>
-          )} 
-          {activeTool === "text" && (
-            activeMode === "spotify" ? (
-              <div className="flex flex-col gap-6">
+          )}
+          {activeTool === "text" && activeMode === "spotify" && (
+            <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Artista
+                  Música
                 </label>
                 <input
                   type="text"
-                  value={content.musicTitle}
-                  onChange={(e) => handleInputChange("musicTitle", e.target.value)}
+                  value={content.itemTitle}
+                  onChange={(e) =>
+                    handleInputChange("itemTitle", e.target.value)
+                  }
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Nome da música"
                 />
@@ -339,17 +393,20 @@ export default function Editor() {
                 />
               </div>
             </div>
-              
-            ) : (
-              <div className="flex flex-col gap-6">
+          )}
+
+          {activeTool === "text" && activeMode === "letterboxd" && (
+            <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Nome do filme
                 </label>
                 <input
                   type="text"
-                  value={content.musicTitle}
-                  onChange={(e) => handleInputChange("musicTitle", e.target.value)}
+                  value={content.itemTitle}
+                  onChange={(e) =>
+                    handleInputChange("itemTitle", e.target.value)
+                  }
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Nome do filme"
                 />
@@ -369,7 +426,155 @@ export default function Editor() {
                 />
               </div>
             </div>
-            ) 
+          )}
+
+          {activeTool === "text" && activeMode === "whatsapp" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Nome do Contato
+                </label>
+                <input
+                  type="text"
+                  value={content.itemTitle}
+                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: Maria"
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Mensagens
+                </label>
+                {(content.messages || []).map((msg: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-1.5 p-3 bg-gray-50 border border-gray-200 rounded-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          msg.type === "sent"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {msg.type === "sent" ? "Enviada" : "Recebida"}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            const updated = content.messages.map(
+                              (m: any, i: number) =>
+                                i === index
+                                  ? {
+                                      ...m,
+                                      type:
+                                        m.type === "sent" ? "received" : "sent",
+                                    }
+                                  : m,
+                            );
+                            setContent((prev: any) => ({
+                              ...prev,
+                              messages: updated,
+                            }));
+                          }}
+                          className="text-[10px] text-gray-400 hover:text-gray-700 px-1.5 py-0.5 rounded border border-gray-200 hover:border-gray-400 transition-all"
+                        >
+                          Trocar
+                        </button>
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      value={msg.text}
+                      onChange={(e) => {
+                        const updated = content.messages.map(
+                          (m: any, i: number) =>
+                            i === index ? { ...m, text: e.target.value } : m,
+                        );
+                        setContent((prev: any) => ({
+                          ...prev,
+                          messages: updated,
+                        }));
+                      }}
+                      className="w-full p-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-gray-900 transition-all"
+                      placeholder="Texto da mensagem"
+                    />
+                    <input
+                      type="text"
+                      value={msg.time}
+                      onChange={(e) => {
+                        const updated = content.messages.map(
+                          (m: any, i: number) =>
+                            i === index ? { ...m, time: e.target.value } : m,
+                        );
+                        setContent((prev: any) => ({
+                          ...prev,
+                          messages: updated,
+                        }));
+                      }}
+                      className="w-24 p-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-gray-900 transition-all"
+                      placeholder="Hora (ex: 10:42)"
+                    />
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: [
+                          ...msgs,
+                          {
+                            text: "Nova mensagem",
+                            type: "sent",
+                            time: "10:00",
+                          },
+                        ],
+                      }));
+                    }}
+                    className="flex-1 p-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-black transition-colors"
+                  >
+                    + Mensagem enviada
+                  </button>
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: [
+                          ...msgs,
+                          {
+                            text: "Nova mensagem",
+                            type: "received",
+                            time: "10:00",
+                          },
+                        ],
+                      }));
+                    }}
+                    className="flex-1 p-2 text-sm bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    + Mensagem recebida
+                  </button>
+                </div>
+                {(content.messages || []).length > 0 && (
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: msgs.slice(0, -1),
+                      }));
+                    }}
+                    className="p-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    – Remover última
+                  </button>
+                )}
+              </div>
+            </div>
           )}
 
           {activeTool === "uploads" && activeMode === "spotify" && (
@@ -392,23 +597,34 @@ export default function Editor() {
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "cover")}
-                  className="hidden"
-                />
-              </label>
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "cover")}
+                    className="hidden"
+                  />
+                </label>
               </div>
               <div className="flex items-center gap-2">
-              <h1>Background:</h1>
-              <button onClick={() => setContent((prev) => ({ ...prev, bgColor: "#808080", bgImage: "" }))} className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">Padrão</button>
+                <h1>Background:</h1>
+                <button
+                  onClick={() =>
+                    setContent((prev) => ({
+                      ...prev,
+                      bgColor: "#808080",
+                      bgImage: "",
+                    }))
+                  }
+                  className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all"
+                >
+                  Padrão
+                </button>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2">
                 {uploadedBgImages.map((img, index) => (
                   <div
@@ -424,20 +640,106 @@ export default function Editor() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "bg")}
-                  className="hidden"
-                />
-              </label>
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "bg")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {activeTool === "uploads" && activeMode === "whatsapp" && (
+            <div className="flex flex-col gap-6">
+              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Foto de Perfil
+              </h1>
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedProfileImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev: any) => ({
+                        ...prev,
+                        profileImage: img,
+                      }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "profile")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Background
+                </h1>
+                <button
+                  onClick={() =>
+                    setContent((prev: any) => ({
+                      ...prev,
+                      bgColor: "",
+                      bgImage: "/wppback.jpg",
+                    }))
+                  }
+                  className="ml-auto px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-all"
+                >
+                  Padrão
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedBgImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev: any) => ({ ...prev, bgImage: img }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "bg")}
+                    className="hidden"
+                  />
+                </label>
               </div>
             </div>
           )}
@@ -445,10 +747,21 @@ export default function Editor() {
           {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-2">
-              <h1>Background:</h1>
-              <button onClick={() => setContent((prev) => ({ ...prev, bgColor: "#808080", bgImage: "" }))} className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">Padrão</button>
+                <h1>Background:</h1>
+                <button
+                  onClick={() =>
+                    setContent((prev) => ({
+                      ...prev,
+                      bgColor: "#808080",
+                      bgImage: "",
+                    }))
+                  }
+                  className="w-1/2 p-3 ml-10 bg-gray-100/50 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all"
+                >
+                  Padrão
+                </button>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2">
                 {uploadedBgImages.map((img, index) => (
                   <div
@@ -466,17 +779,17 @@ export default function Editor() {
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "bg")}
-                  className="hidden"
-                />
-              </label>
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "bg")}
+                    className="hidden"
+                  />
+                </label>
               </div>
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">
@@ -496,17 +809,17 @@ export default function Editor() {
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "poster")}
-                  className="hidden"
-                />
-              </label>
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "poster")}
+                    className="hidden"
+                  />
+                </label>
               </div>
               <h1>Foto de perfil:</h1>
               <div className="grid grid-cols-2 gap-2">
@@ -526,17 +839,17 @@ export default function Editor() {
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <Download className="w-6 h-6 rotate-180" />
-                  <span className="text-sm font-medium">Fazer Upload</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "profile")}
-                  className="hidden"
-                />
-              </label>
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "profile")}
+                    className="hidden"
+                  />
+                </label>
               </div>
             </div>
           )}
@@ -558,7 +871,7 @@ export default function Editor() {
                     onChange={(e) =>
                       setContent((prev) => ({
                         ...prev,
-                          contentColor: e.target.value,
+                        contentColor: e.target.value,
                       }))
                     }
                     className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
@@ -580,7 +893,7 @@ export default function Editor() {
                     onChange={(e) =>
                       setContent((prev) => ({
                         ...prev,
-                          bgColor: e.target.value,
+                        bgColor: e.target.value,
                       }))
                     }
                     className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent"
@@ -593,14 +906,14 @@ export default function Editor() {
                 </label>
                 <div className="flex items-center gap-3 w-full">
                   <input
-                      type="checkbox"
+                    type="checkbox"
                     checked={content.glassmorphism}
                     onChange={(e) =>
                       setContent((prev) => ({
                         ...prev,
                         glassmorphism: e.target.checked,
                       }))
-                    } 
+                    }
                     className="h-10 w-10 rounded-lg cursor-pointer bg-transparent"
                   />
                   {content.glassmorphism && (
@@ -612,9 +925,9 @@ export default function Editor() {
                           ...prev,
                           glassColor: e.target.value,
                         }))
-                      } 
+                      }
                       className="flex-1 h-10 rounded-lg cursor-pointer bg-transparent "
-                    />  
+                    />
                   )}
                 </div>
               </div>
@@ -628,11 +941,24 @@ export default function Editor() {
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 z-10 shrink-0 overflow-x-auto">
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            <input type="text" value={content.title} onChange={(e) => handleInputChange("title", e.target.value)} className="font-medium text-gray-900 w-24 md:w-auto bg-transparent border-none focus:outline-none" placeholder="Título" />
+            <input
+              type="text"
+              value={content.title}
+              onChange={(e) => handleInputChange("title", e.target.value)}
+              className="font-medium text-gray-900 w-24 md:w-auto bg-transparent border-none focus:outline-none"
+              placeholder="Título"
+            />
             <span className="text-gray-300">|</span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
-              <button onClick={handleSave} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
                 <span className="hidden md:inline">Salvar</span>
               </button>
             </span>
@@ -646,25 +972,44 @@ export default function Editor() {
               <Redo className="w-5 h-5" />
             </button>
             <div className="hidden md:block h-6 w-px bg-gray-200 mx-2"></div>
-            <button onClick={handleDownload} className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors">
-              {loadingDownload ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-2 bg-[#1a1a1a] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm font-medium hover:bg-black transition-colors"
+            >
+              {loadingDownload ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
               Exportar
             </button>
           </div>
         </header>
 
         {/* Canvas Area */}
-        <div ref={divRef} className="flex-1 bg-gray-100 flex items-center justify-center p-4 md:p-12 overflow-hidden relative" onClick={() => { if(window.innerWidth < 768) setActiveTool(null) }}>
+        <div
+          ref={divRef}
+          className="flex-1 bg-gray-100 flex items-center justify-center p-4 md:p-12 overflow-hidden relative"
+          onClick={() => {
+            if (window.innerWidth < 768) setActiveTool(null);
+          }}
+        >
           <div className="transform scale-[0.55] sm:scale-[0.7] md:scale-90 lg:scale-100 origin-center transition-transform duration-300">
             {activeMode === "spotify" && (
-              <SpotifyCanvas ref={canvasRef} content={content} handleBlur={handleBlur} />
+              <SpotifyCanvas
+                ref={canvasRef}
+                content={content}
+                handleBlur={handleBlur}
+              />
             )}
             {activeMode === "letterboxd" && (
               <LetterboxdCanvas content={content} handleBlur={handleBlur} />
             )}
+            {activeMode === "whatsapp" && (
+              <WhatsappCanvas content={content} handleBlur={handleBlur} />
+            )}
           </div>
         </div>
-
       </main>
     </div>
   );
