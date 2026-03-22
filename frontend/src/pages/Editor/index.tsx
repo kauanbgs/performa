@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   LayoutTemplate,
   Type,
@@ -15,23 +15,41 @@ import {
   Maximize,
 } from "lucide-react";
 import "../../index.css";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
+import api from "../../services/axios";
 
 export default function Editor() {
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/");
+    return;
+  }
+
+  const { id } = useParams();
+
+  useEffect(()=>{
+    api.getProject(token, id).then((response: any) => {
+      console.log(response.data);
+      setContent(response.data);
+    });
+  },[])
+
   const [activeTool, setActiveTool] = useState("design");
   const [activeMode, setActiveMode] = useState("spotify ");
   const [content, setContent] = useState({
-    title: "While My Guitar Gently Weeps",
-    artist: "The Beatles",
-    lyrics: "I look at you all, see the love there that's sleeping\nWhile my guitar gently weeps",
-    coverImage: "beatlescapa.jpg",
-    bgImage: "beatles.jpg",
+    title: "",
+    artist: "",
+    lyrics: "",
+    coverImage: "",
+    bgImage: "",
     glassmorphism: true,
     glassColor: "#ffffff",
-    posterImage: "beatlescapa.jpg",
-    profileImage: "beatlescapa.jpg",
+    posterImage: "",
+    profileImage: "",
     rating: 5,
     contentColor: "#808080",
     bgColor: "#ffffff",
@@ -478,7 +496,7 @@ export default function Editor() {
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10">
           <div className="flex items-center gap-4">
-            <span className="font-medium text-gray-900">Fake Spotify</span>
+            <span className="font-medium text-gray-900">{content.title}</span>
             <span className="text-gray-300">|</span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full border border-gray-400"></span>{" "}

@@ -4,6 +4,7 @@ const puppeteer = require("puppeteer");
 module.exports = class projectController {
   static async createProject(req, res) {
     const { title } = req.body;
+    const userId = req.userId;
 
     if (!title) {
       return res.status(400).json({
@@ -12,11 +13,10 @@ module.exports = class projectController {
     }
 
     try {
-      await prisma.project.create({
-        data: { title }
+      const project = await prisma.project.create({
+        data: { title, userId }
       });
-
-      return res.status(201).json({ message: "Projeto criado com sucesso!", projeto: title });
+      return res.status(201).json({ message: "Projeto criado com sucesso!", id: project.id });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Erro ao criar projeto", err: err.message });
@@ -25,17 +25,21 @@ module.exports = class projectController {
 
   static async readProject(req, res) {
     try {
-      const projects = await prisma.project.findMany();
-      return res.status(200).json(projects);
+      const project = await prisma.project.findUnique({
+        where: {
+          id: req.params.id
+        }
+      });
+      return res.status(200).json(project);
     } catch (err) {
       console.log(err);
-      return res.status(500).json({ error: "Erro ao buscar projetos", err: err.message });
+      return res.status(500).json({ error: "Erro ao buscar projeto", err: err.message });
     }
   }
+  
+  static async 
 
   static async exportProject(req, res) {
-    const content = req.body;
-
     let browser;
 
     try {

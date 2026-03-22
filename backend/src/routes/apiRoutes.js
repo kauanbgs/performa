@@ -4,10 +4,10 @@ const userController = require("../controllers/userController");
 const auth = require("../middlewares/auth");
 
 //      CONTROLLER PROJECT     //
-router.post("/project", projectController.createProject);
-router.get("/project", projectController.readProject);
+router.post("/project", auth, projectController.createProject);
+router.get("/project/:id", auth, projectController.readProject);
 
-router.post("/export", projectController.exportProject);
+router.post("/export", auth, projectController.exportProject);
 
 //      CONTROLLER USER     //
 router.post("/user", userController.createUser);

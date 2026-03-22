@@ -1,7 +1,9 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Link } from "react-router-dom";
 import { Music, Clapperboard, Quote, MoreHorizontal, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
+import api from "../../services/axios";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -9,6 +11,21 @@ export default function Home() {
   if (!token) {
     navigate("/");
   }
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    const getProjects = async () => {
+      const response = await api.getProjects(token);
+      setProjects(response.data);
+    };
+    getProjects();
+  }, []);
+
+  const createProject = (title: string) => {
+    const defaultTitle = title || "Novo Projeto";
+    api.postProject(token, { title: defaultTitle }).then((response: any) => {
+      navigate(`/editor/${response.data.id}`);
+    }).catch((err: any) => console.error("Erro ao criar projeto:", err));
+  };
   return (
     <div className="min-h-screen bg-[#fdfbf9] font-sans">
       <Navbar />
@@ -27,7 +44,7 @@ export default function Home() {
         {/* Action Cards */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
           {/* Card 1 */}
-          <Link to="/editor" className="group cursor-pointer block">
+          <div className="group cursor-pointer block" onClick={() => createProject("Post Musical")}>
             <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
             <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
               Post Musical
@@ -35,10 +52,10 @@ export default function Home() {
             <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
               Destaque letras, albuns ou músicas da forma em que você desejar.
             </p>
-          </Link>
+          </div>
 
           {/* Card 2 */}
-          <Link to="/editor" className="group cursor-pointer block">
+          <div className="group cursor-pointer block" onClick={() => createProject("Post Cinéfilo")}>
             <Film className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
             <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
               Post cinéfilo
@@ -46,10 +63,10 @@ export default function Home() {
             <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
               Poster Art, estrelas e críticas com o filme selecionado.
             </p>
-          </Link>
+          </div>
 
           {/* Card 3 */}
-          <Link to="/editor" className="group cursor-pointer block">
+          <div className="group cursor-pointer block" onClick={() => createProject("Citações")}>
             <Quote className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
             <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
               Citações
@@ -57,7 +74,7 @@ export default function Home() {
             <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
               Se sinta um filósofo.
             </p>
-          </Link>
+          </div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -67,16 +84,16 @@ export default function Home() {
               <h2 className="text-3xl font-primary text-gray-900">
                 Projetos Recentes
               </h2>
-              <button className="text-xs font-medium text-gray-400 hover:text-gray-900 tracking-wider transition-colors uppercase">
+              {/* <button className="text-xs font-medium text-gray-400 hover:text-gray-900 tracking-wider transition-colors uppercase">
                 Ver todos
-              </button>
+              </button> */}
             </div>
 
             <div className="space-y-8">
               {/* Project Items */}
-              {[1, 2, 3, 4, 5].map((item) => (
+              {projects.map((project: any) => (
                 <div
-                  key={item}
+                  key={project.id}
                   className="flex items-center group cursor-pointer"
                 >
                   <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-gray-100 transition-colors border border-gray-100">
@@ -84,15 +101,15 @@ export default function Home() {
                   </div>
                   <div className="flex-1">
                     <h4 className="font-primary text-xl text-gray-900 mb-1">
-                      La La Land Review
+                      {project.title}
                     </h4>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
                       Cinema - Há 2 horas
                     </p>
                   </div>
-                  <button className="p-2 text-gray-300 hover:text-gray-900 transition-colors">
+                  {/* <button className="p-2 text-gray-300 hover:text-gray-900 transition-colors">
                     <MoreHorizontal className="w-5 h-5" />
-                  </button>
+                  </button> */}
                 </div>
               ))}
             </div>

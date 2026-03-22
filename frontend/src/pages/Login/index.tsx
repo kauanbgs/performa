@@ -19,7 +19,6 @@ export default function Login() {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
-    console.log(user);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
