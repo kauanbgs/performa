@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Film, Trash2 } from "lucide-react";
+import { Music, Clapperboard, Film, Trash2, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -17,9 +17,11 @@ export default function Home() {
   const [projects, setProjects] = useState<any[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const profile = await api.getProfile(token);
         const userId = profile.data.id;
@@ -28,6 +30,8 @@ export default function Home() {
         setProjects(response.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -148,7 +152,12 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              {projects.map((project: any) => (
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+              ) : (
+                projects.map((project: any) => (
                 <div
                   key={project.id}
                   className="flex items-center group rounded-xl hover:bg-gray-50 transition-colors px-2 py-3"
@@ -179,6 +188,7 @@ export default function Home() {
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
+                )
               ))}
             </div>
           </div>

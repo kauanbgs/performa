@@ -12,6 +12,8 @@ import {
   Download,
   Save,
   Loader2,
+  Instagram,
+  MessageCircle,
 } from "lucide-react";
 import "../../index.css";
 import React, { useState, useRef, useEffect } from "react";
@@ -19,6 +21,7 @@ import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import api from "../../services/axios";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
+import InstagramCanvas from "../../components/canvas/instagramCanvas";
 
 export default function Editor() {
   const navigate = useNavigate();
@@ -77,6 +80,8 @@ export default function Editor() {
         time: "10:45",
       },
     ],
+    followers: 100,
+    posts: 5,
   });
 
   useEffect(() => {
@@ -337,7 +342,7 @@ export default function Editor() {
                   Fake Letterboxd
                 </span>
               </button>
-              {/* Template Item 2 */}
+              {/* Template Item 3 */}
               <button
                 onClick={() => setActiveMode("whatsapp")}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
@@ -345,10 +350,23 @@ export default function Editor() {
                 <div
                   className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "whatsapp" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
                 >
-                  <Film className="w-8 h-8 text-gray-400" />
+                  <MessageCircle className="w-8 h-8 text-gray-400" />
                 </div>
                 <span className="text-xs font-medium text-gray-900 text-center">
                   Fake Whatsapp
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveMode("instagram")}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "instagram" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
+                  <Instagram className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Fake Instagram
                 </span>
               </button>
             </div>
@@ -424,6 +442,180 @@ export default function Editor() {
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Estrelas"
                 />
+              </div>
+            </div>
+          )}
+          {activeTool === "text" && activeMode === "instagram" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Nome do Contato
+                </label>
+                <input
+                  type="text"
+                  value={content.itemTitle}
+                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: Maria"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Seguidores
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={content.followers}
+                  onChange={(e) => handleInputChange("followers", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Seguidores"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Posts
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={content.posts}
+                  onChange={(e) => handleInputChange("posts", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Posts"
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Mensagens
+                </label>
+                {(content.messages || []).map((msg: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-1.5 p-3 bg-gray-50 border border-gray-200 rounded-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          msg.type === "sent"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {msg.type === "sent" ? "Enviada" : "Recebida"}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            const updated = content.messages.map(
+                              (m: any, i: number) =>
+                                i === index
+                                  ? {
+                                      ...m,
+                                      type:
+                                        m.type === "sent" ? "received" : "sent",
+                                    }
+                                  : m,
+                            );
+                            setContent((prev: any) => ({
+                              ...prev,
+                              messages: updated,
+                            }));
+                          }}
+                          className="text-[10px] text-gray-400 hover:text-gray-700 px-1.5 py-0.5 rounded border border-gray-200 hover:border-gray-400 transition-all"
+                        >
+                          Trocar
+                        </button>
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      value={msg.text}
+                      onChange={(e) => {
+                        const updated = content.messages.map(
+                          (m: any, i: number) =>
+                            i === index ? { ...m, text: e.target.value } : m,
+                        );
+                        setContent((prev: any) => ({
+                          ...prev,
+                          messages: updated,
+                        }));
+                      }}
+                      className="w-full p-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-gray-900 transition-all"
+                      placeholder="Texto da mensagem"
+                    />
+                    <input
+                      type="text"
+                      value={msg.time}
+                      onChange={(e) => {
+                        const updated = content.messages.map(
+                          (m: any, i: number) =>
+                            i === index ? { ...m, time: e.target.value } : m,
+                        );
+                        setContent((prev: any) => ({
+                          ...prev,
+                          messages: updated,
+                        }));
+                      }}
+                      className="w-24 p-2 bg-white border border-gray-200 rounded text-sm focus:outline-none focus:border-gray-900 transition-all"
+                      placeholder="Hora (ex: 10:42)"
+                    />
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: [
+                          ...msgs,
+                          {
+                            text: "Nova mensagem",
+                            type: "sent",
+                            time: "10:00",
+                          },
+                        ],
+                      }));
+                    }}
+                    className="flex-1 p-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-black transition-colors"
+                  >
+                    + Mensagem enviada
+                  </button>
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: [
+                          ...msgs,
+                          {
+                            text: "Nova mensagem",
+                            type: "received",
+                            time: "10:00",
+                          },
+                        ],
+                      }));
+                    }}
+                    className="flex-1 p-2 text-sm bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    + Mensagem recebida
+                  </button>
+                </div>
+                {(content.messages || []).length > 0 && (
+                  <button
+                    onClick={() => {
+                      const msgs = content.messages || [];
+                      setContent((prev: any) => ({
+                        ...prev,
+                        messages: msgs.slice(0, -1),
+                      }));
+                    }}
+                    className="p-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    – Remover última
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -744,6 +936,64 @@ export default function Editor() {
             </div>
           )}
 
+          {activeTool === "uploads" && activeMode === "instagram" && (
+            <div className="flex flex-col gap-6">
+              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Foto de Perfil
+              </h1>
+              <div className="grid grid-cols-2 gap-2">
+                {uploadedProfileImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() =>
+                      setContent((prev: any) => ({
+                        ...prev,
+                        profileImage: img,
+                      }))
+                    }
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
+                  >
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "profile")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Background
+                </h1>
+                <button
+                  onClick={() =>
+                    setContent((prev: any) => ({
+                      ...prev,
+                      bgColor: "#ffffff",
+                      bgImage: "",
+                    }))
+                  }
+                  className="ml-auto px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-all"
+                >
+                  Padrão
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-2">
@@ -854,7 +1104,7 @@ export default function Editor() {
             </div>
           )}
 
-          {activeTool === "style" && (
+          {activeTool === "style" && activeMode !== "instagram" && (
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -1007,6 +1257,9 @@ export default function Editor() {
             )}
             {activeMode === "whatsapp" && (
               <WhatsappCanvas content={content} handleBlur={handleBlur} />
+            )}
+            {activeMode === "instagram" && (
+              <InstagramCanvas content={content} handleBlur={handleBlur} />
             )}
           </div>
         </div>
