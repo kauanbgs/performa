@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import SpotifyCanvas from "./spotifyCanvas";
 import LetterboxdCanvas from "./letterboxdCanvas";
 import WhatsappCanvas from "./whatsappCanvas";
+import InstagramCanvas from "./instagramCanvas";
 
 interface ExportData {
   template: string;
@@ -36,6 +37,9 @@ export default function ExportTemplate() {
       )}
       {data.template === "whatsapp" && (
         <WhatsappCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      )}
+      {data.template === "instagram" && (
+        <InstagramCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
       )}
     </div>
   );
