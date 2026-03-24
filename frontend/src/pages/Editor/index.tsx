@@ -17,6 +17,7 @@ import {
   ZoomOut,
   Instagram,
   MessageCircle,
+  Trash2,
 } from "lucide-react";
 import "../../index.css";
 import { useState, useRef, useEffect } from "react";
@@ -153,6 +154,14 @@ export default function Editor() {
     event: React.ChangeEvent<HTMLInputElement>,
     type: "cover" | "bg" | "poster" | "profile",
   ) => {
+    const imagesKey = type + "Images" as keyof typeof content;
+    const currentImages = (content[imagesKey] as string[]) || [];
+
+    if (currentImages.length >= 2) {
+      alert("Você só pode adicionar até 2 imagens de cada tipo.");
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -190,6 +199,30 @@ export default function Editor() {
     } catch (err) {
       console.error("Erro no upload:", err);
     }
+  };
+
+  const handleImageDelete = (
+    type: "cover" | "bg" | "poster" | "profile",
+    index: number,
+  ) => {
+    const imagesKey = type + "Images" as keyof typeof content;
+    const imageKey = type + "Image" as keyof typeof content;
+    const currentImages = (content[imagesKey] as string[]) || [];
+
+    const newImages = currentImages.filter((_, i) => i !== index);
+    const activeImage = content[imageKey] as string;
+
+    // Se a imagem deletada era a ativa, troca para a primeira disponível ou limpa
+    let newActiveImage = activeImage;
+    if (activeImage === currentImages[index]) {
+      newActiveImage = newImages.length > 0 ? newImages[0] : "";
+    }
+
+    setContent((prev: any) => ({
+      ...prev,
+      [imagesKey]: newImages,
+      [imageKey]: newActiveImage,
+    }));
   };
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -847,18 +880,19 @@ export default function Editor() {
               <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
                 {content.coverImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({ ...prev, coverImage: img }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, coverImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("cover", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -892,18 +926,19 @@ export default function Editor() {
 
               <div className="grid grid-cols-2 gap-2">
                 {content.bgImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({ ...prev, bgImage: img }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, bgImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("bg", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -929,21 +964,19 @@ export default function Editor() {
               </h1>
               <div className="grid grid-cols-2 gap-2">
                 {content.profileImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({
-                        ...prev,
-                        profileImage: img,
-                      }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -979,18 +1012,19 @@ export default function Editor() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {content.bgImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({ ...prev, bgImage: img }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, bgImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("bg", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -1016,21 +1050,19 @@ export default function Editor() {
               </h1>
               <div className="grid grid-cols-2 gap-2">
                 {content.profileImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({
-                        ...prev,
-                        profileImage: img,
-                      }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -1087,18 +1119,19 @@ export default function Editor() {
 
               <div className="grid grid-cols-2 gap-2">
                 {content.bgImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({ ...prev, bgImage: img }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, bgImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("bg", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -1117,18 +1150,19 @@ export default function Editor() {
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">
                 {content.posterImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({ ...prev, posterImage: img }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, posterImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("poster", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
@@ -1147,21 +1181,19 @@ export default function Editor() {
               <h1>Foto de perfil:</h1>
               <div className="grid grid-cols-2 gap-2">
                 {content.profileImages?.map((img: any, index: any) => (
-                  <div
-                    key={index}
-                    onClick={() =>
-                      setContent((prev: any) => ({
-                        ...prev,
-                        profileImage: img,
-                      }))
-                    }
-                    className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
-                  >
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
                     <img
                       src={img}
                       alt={`Upload ${index}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
                     />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
                 <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
