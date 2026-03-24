@@ -7,11 +7,9 @@ export default function Ideias() {
   const token = localStorage.getItem("token") as string;
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
         const profile = await api.getProfile(token);
         const userId = profile.data.id;
@@ -20,8 +18,6 @@ export default function Ideias() {
         setProjects(response.data);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();

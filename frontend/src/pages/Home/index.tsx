@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Film, Trash2, Loader2, ArrowRight, MessageCircle } from "lucide-react";
+import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
