@@ -17,6 +17,9 @@ const defaultContent = {
   bgColor: "#ffffff",
 };
 
+  let browserInstance = null;
+
+
 module.exports = class projectController {
   static async createProject(req, res) {
     const { title, content } = req.body;
@@ -129,6 +132,33 @@ module.exports = class projectController {
 
   static async exportProject(req, res) {
   let page;
+  async function getBrowser() {
+  if (browserInstance) {
+    try {
+      await browserInstance.version();
+      return browserInstance;
+    } catch (err) {
+      console.warn("Browser anterior fechado, criando novo...");
+      browserInstance = null;
+    }
+  }
+
+  // Cria uma nova instância do browser
+  browserInstance = await puppeteer.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+    ],
+  });
+
+  // Opcional: fecha o browser automaticamente se o processo Node encerrar
+  process.on("exit", async () => {
+    if (browserInstance) await browserInstance.close();
+  });
+
+  return browserInstance;
+}
 
   try {
     const browser = await getBrowser();
