@@ -1,9 +1,10 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Film, Trash2, Loader2, ArrowRight } from "lucide-react";
+import { Music, Clapperboard, Film, Trash2, Loader2, ArrowRight, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import api from "../../services/axios";
+import Footer from "../../components/layout/Footer";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -118,24 +119,24 @@ export default function Home() {
             {/* Action Cards */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Musical")}>
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Performático")}>
                 <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
-                  Post Musical
+                  Post Performático
                 </h3>
                 <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
-                  Destaque letras, albuns ou músicas da forma em que você desejar.
+                  Crie o que quiser, afinal de contas, a internet é um lugar falso.
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Cinéfilo")}>
-                <Film className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Conversa")}>
+                <MessageCircle className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
-                  Post cinéfilo
+                  Conversa
                 </h3>
                 <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
-                  Poster Art, estrelas e críticas com o filme selecionado.
+                  Crie conversas com pessoas famosas, ou com aquele amigo que você tanto ama.
                 </p>
               </div>
             </section>
@@ -200,7 +201,7 @@ export default function Home() {
             ) : projects.length > 0 ? (
               <div className="group relative h-full flex flex-col bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-500">
                 <div 
-                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer"
+                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border-2 border-gray-200 rounded-3xl"
                   onClick={() => navigate(`/editor/${projects[0].id}`)}
                 >
                   {projects[0].previewImage && projects[0].previewImage !== "/transparente.jpg" ? (
@@ -259,6 +260,7 @@ export default function Home() {
         </div>
 
       </main>
+      <Footer />
     </div>
   );
 }

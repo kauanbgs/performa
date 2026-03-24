@@ -3,6 +3,7 @@ import { Music, LayoutTemplate, Type, Smartphone } from "lucide-react";
 import { Navbar } from "../../components/layout/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Footer from "../../components/layout/Footer";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -282,6 +283,7 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
