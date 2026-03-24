@@ -93,10 +93,10 @@ export default function Editor() {
   });
 
   const handleInputZoomPlus = () => {
-  setZoom((prevZoom:any) => prevZoom + 0.05);
+  setZoom((prevZoom:any) => prevZoom + 0.1);
   };
   const handleInputZoomMinus = () => {
-    setZoom((prevZoom:any) => prevZoom - 0.05);
+    setZoom((prevZoom:any) => prevZoom - 0.1);
   };
   const handleInputZoomNormal = () => {
   setZoom(1);
@@ -355,7 +355,14 @@ export default function Editor() {
             <div className="grid grid-cols-2 gap-4">
               {/* Template Item 1 */}
               <button
-                onClick={() => setActiveMode("spotify")}
+                onClick={() => {
+                  setActiveMode("spotify")
+                  content.itemTitle = "Nome da música"
+                  content.artist = "Nome do artista"
+                  content.lyrics = "Sua letra"
+                  content.bgColor = "#a265cb"
+                  content.coverImage = "/beatles.jpg"
+                }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
                 <div
@@ -383,7 +390,10 @@ export default function Editor() {
               </button>
               {/* Template Item 3 */}
               <button
-                onClick={() => setActiveMode("whatsapp")}
+                onClick={() => {
+                  setActiveMode("whatsapp")
+                  
+                }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
                 <div
@@ -396,7 +406,14 @@ export default function Editor() {
                 </span>
               </button>
               <button
-                onClick={() => setActiveMode("instagram")}
+                onClick={() => {
+                  setActiveMode("instagram")
+                  content.bgColor = "#FFFFFF"
+                  content.bgImage = ""
+                  content.itemTitle = "Kauan Plaza"
+                  content.followers = "344"
+                  content.posts = "0"
+              }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
                 <div
