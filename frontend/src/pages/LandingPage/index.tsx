@@ -239,11 +239,10 @@ export default function LandingPage() {
                 <Type className="w-8 h-8 text-gray-700 stroke-[1.5]" />
               </div>
               <h3 className="text-2xl font-primary text-gray-900 font-medium">
-                Tipografia Serifada
+                Textos Personalizados
               </h3>
               <p className="text-gray-600 font-secondary leading-relaxed">
-                Acesso direto à fontes elegantes como Playfair Display e
-                Garamond. Diga adeus ao design genérico.
+                Crie legendas e textos com a sua cara, sem precisar se preocupar com a formatação.
               </p>
             </div>
 
@@ -261,47 +260,6 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Item 4 (Repetition as per user image request) */}
-            <div className="flex flex-col items-start space-y-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <Smartphone className="w-8 h-8 text-gray-700 stroke-[1.5]" />
-              </div>
-              <h3 className="text-2xl font-primary text-gray-900 font-medium">
-                Mobile First
-              </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
-                Uma interface que flui naturalmente no seu celular. Toque,
-                arraste e crie sem fricção.
-              </p>
-            </div>
-
-            {/* Item 5 (Repetition as per user image request) */}
-            <div className="flex flex-col items-start space-y-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <LayoutTemplate className="w-8 h-8 text-gray-700 stroke-[1.5]" />
-              </div>
-              <h3 className="text-2xl font-primary text-gray-900 font-medium">
-                Templates Clean
-              </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
-                Tudo o que você precisa para transformar pensamentos em arte
-                visual.
-              </p>
-            </div>
-
-            {/* Item 6 (Repetition as per user image request) */}
-            <div className="flex flex-col items-start space-y-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <Type className="w-8 h-8 text-gray-700 stroke-[1.5]" />
-              </div>
-              <h3 className="text-2xl font-primary text-gray-900 font-medium">
-                Tipografia Serifada
-              </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
-                Acesso direto à fontes elegantes como Playfair Display e
-                Garamond. Diga adeus ao design genérico.
-              </p>
-            </div>
           </div>
         </div>
       </section>

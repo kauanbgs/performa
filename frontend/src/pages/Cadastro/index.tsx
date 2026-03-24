@@ -43,8 +43,10 @@ export default function Cadastro() {
   return (
     <div className="bg-[url('/fundoLogin.png')] bg-cover bg-center min-h-screen items-center flex align-center justify-center flex-col">
       <main className="w-[31%] bg-white rounded-lg items-center align-center justify-center min-h-125 w-[80%] max-w-105">
-        <div className="flex flex-col items-center justify-center p-10">
-          <img src="/logoPerforma.png" alt="" className="w-48" />
+        <div className="flex items-center justify-center p-10">
+          <button onClick={() => navigate("/")}>
+            <img src="/logoPerforma.png" alt="" className="w-48 cursor-pointer" />
+          </button>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col p-6">
           <div className="flex flex-col mb-3">

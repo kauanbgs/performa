@@ -55,7 +55,7 @@ export default function Editor() {
   const [activeTool, setActiveTool] = useState<string | null>(
     window.innerWidth < 768 ? null : "design",
   );
-  const [zoom, setZoom] = useState(1)
+  const [zoom, setZoom] = useState(1);
   const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
   const [loadingDownload, setLoadingDownload] = useState(false);
@@ -64,7 +64,7 @@ export default function Editor() {
     itemTitle: "",
     artist: "",
     lyrics: "",
-    coverImages: [], 
+    coverImages: [],
     bgImages: [],
     posterImages: [],
     profileImages: [],
@@ -93,14 +93,14 @@ export default function Editor() {
   });
 
   const handleInputZoomPlus = () => {
-  setZoom((prevZoom:any) => prevZoom + 0.1);
+    setZoom((prevZoom: any) => prevZoom + 0.1);
   };
   const handleInputZoomMinus = () => {
-    setZoom((prevZoom:any) => prevZoom - 0.1);
+    setZoom((prevZoom: any) => prevZoom - 0.1);
   };
   const handleInputZoomNormal = () => {
-  setZoom(1);
-};
+    setZoom(1);
+  };
   useEffect(() => {
     api
       .getProject(token, id)
@@ -118,30 +118,28 @@ export default function Editor() {
       .catch((err: any) => console.error("Erro ao carregar projeto:", err));
   }, [id]);
 
-
   const uploadImage = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file); // arquivo real
-  formData.append("upload_preset", "performa"); // seu preset
+    const formData = new FormData();
+    formData.append("file", file); // arquivo real
+    formData.append("upload_preset", "performa"); // seu preset
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dhur4ejzm/image/upload",
-    {
-      method: "POST",
-      body: formData,
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dhur4ejzm/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Erro Cloudinary:", data);
+      throw new Error(data.error?.message || "Erro no upload Cloudinary");
     }
-  );
 
-  const data = await res.json();
-
-  if (!res.ok) {
-    console.error("Erro Cloudinary:", data);
-    throw new Error(data.error?.message || "Erro no upload Cloudinary");
-  }
-
-  return data.secure_url; // URL final da imagem
-};
-
+    return data.secure_url; // URL final da imagem
+  };
 
   const handleBlur = (field: keyof typeof content, value: string) => {
     setContent((prev: any) => ({ ...prev, [field]: value }));
@@ -152,47 +150,47 @@ export default function Editor() {
   };
 
   const handleImageUpload = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  type: "cover" | "bg" | "poster" | "profile"
-) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "cover" | "bg" | "poster" | "profile",
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  // Preview imediato
-  const preview = URL.createObjectURL(file);
+    // Preview imediato
+    const preview = URL.createObjectURL(file);
 
-  // Atualiza estado para mostrar preview
-  setContent((prev:any) => {
-    const imagesKey = type + "Images"; // ex: "coverImages"
-    const imageKey = type + "Image"; // ex: "coverImage"
-    return {
-      ...prev,
-      [imagesKey]: [...(prev[imagesKey] || []), preview],
-      [imageKey]: preview,
-    };
-  });
-
-  try {
-    // Upload Cloudinary
-    const url = await uploadImage(file);
-
-    setContent((prev:any) => {
-      const imagesKey = type + "Images";
-      const imageKey = type + "Image";
-      const newImages = [...(prev[imagesKey] || [])];
-      // substitui o preview pelo URL real
-      newImages[newImages.length - 1] = url;
-
+    // Atualiza estado para mostrar preview
+    setContent((prev: any) => {
+      const imagesKey = type + "Images"; // ex: "coverImages"
+      const imageKey = type + "Image"; // ex: "coverImage"
       return {
         ...prev,
-        [imagesKey]: newImages,
-        [imageKey]: url,
+        [imagesKey]: [...(prev[imagesKey] || []), preview],
+        [imageKey]: preview,
       };
     });
-  } catch (err) {
-    console.error("Erro no upload:", err);
-  }
-};
+
+    try {
+      // Upload Cloudinary
+      const url = await uploadImage(file);
+
+      setContent((prev: any) => {
+        const imagesKey = type + "Images";
+        const imageKey = type + "Image";
+        const newImages = [...(prev[imagesKey] || [])];
+        // substitui o preview pelo URL real
+        newImages[newImages.length - 1] = url;
+
+        return {
+          ...prev,
+          [imagesKey]: newImages,
+          [imageKey]: url,
+        };
+      });
+    } catch (err) {
+      console.error("Erro no upload:", err);
+    }
+  };
 
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -220,14 +218,24 @@ export default function Editor() {
       }
 
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
 
+      // Criar um arquivo a partir do blob para upload
+      const file = new File([blob], "preview.png", { type: "image/png" });
+      const previewUrl = await uploadImage(file);
+
+      // Atualizar o estado e persistir no banco de dados
+      setContent((prev: any) => {
+        const updated = { ...prev, previewImage: previewUrl };
+        api.updateProject(token, id, updated); // Salva no banco
+        return updated;
+      });
+
+      const downloadUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
+      a.href = downloadUrl;
       a.download = `${activeMode}-${content.title}.png`;
       a.click();
-      URL.revokeObjectURL(url);
-      setContent((prev: any) => ({ ...prev, previewImage: url }));
+      URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error(err);
     } finally {
@@ -356,12 +364,12 @@ export default function Editor() {
               {/* Template Item 1 */}
               <button
                 onClick={() => {
-                  setActiveMode("spotify")
-                  content.itemTitle = "Nome da música"
-                  content.artist = "Nome do artista"
-                  content.lyrics = "Sua letra"
-                  content.bgColor = "#a265cb"
-                  content.coverImage = "/beatles.jpg"
+                  setActiveMode("spotify");
+                  content.itemTitle = "Nome da música";
+                  content.artist = "Nome do artista";
+                  content.lyrics = "Sua letra";
+                  content.bgColor = "#a265cb";
+                  content.coverImage = "/beatles.jpg";
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -377,8 +385,8 @@ export default function Editor() {
               {/* Template Item 2 */}
               <button
                 onClick={() => {
-                  setActiveMode("letterboxd")
-                  content.itemTitle = "Nome do filme"
+                  setActiveMode("letterboxd");
+                  content.itemTitle = "Nome do filme";
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -394,10 +402,8 @@ export default function Editor() {
               {/* Template Item 3 */}
               <button
                 onClick={() => {
-                  setActiveMode("whatsapp")
-                  content.itemTitle = "Kauan Plaza"
-                  
-                  
+                  setActiveMode("whatsapp");
+                  content.itemTitle = "Kauan Plaza";
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -412,13 +418,13 @@ export default function Editor() {
               </button>
               <button
                 onClick={() => {
-                  setActiveMode("instagram")
-                  content.bgColor = "#FFFFFF"
-                  content.bgImage = ""
-                  content.itemTitle = "Kauan Plaza"
-                  content.followers = "344"
-                  content.posts = "0"
-              }}
+                  setActiveMode("instagram");
+                  content.bgColor = "#FFFFFF";
+                  content.bgImage = "";
+                  content.itemTitle = "Kauan Plaza";
+                  content.followers = "344";
+                  content.posts = "0";
+                }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
                 <div
@@ -515,7 +521,9 @@ export default function Editor() {
                 <input
                   type="text"
                   value={content.itemTitle}
-                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("itemTitle", e.target.value)
+                  }
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Ex: Maria"
                 />
@@ -528,7 +536,9 @@ export default function Editor() {
                   type="number"
                   min={0}
                   value={content.followers}
-                  onChange={(e) => handleInputChange("followers", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("followers", e.target.value)
+                  }
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Seguidores"
                 />
@@ -690,7 +700,9 @@ export default function Editor() {
                 <input
                   type="text"
                   value={content.itemTitle}
-                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("itemTitle", e.target.value)
+                  }
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
                   placeholder="Ex: Maria"
                 />
@@ -834,7 +846,7 @@ export default function Editor() {
             <div className="flex flex-col gap-6">
               <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.coverImages?.map((img:any, index:any) => (
+                {content.coverImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -879,7 +891,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {content.bgImages?.map((img:any, index:any) => (
+                {content.bgImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -916,7 +928,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.profileImages?.map((img:any, index:any) => (
+                {content.profileImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -966,7 +978,7 @@ export default function Editor() {
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {content.bgImages?.map((img:any, index:any) => (
+                {content.bgImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1003,7 +1015,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.profileImages?.map((img:any, index:any) => (
+                {content.profileImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1074,7 +1086,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {content.bgImages.map((img:any, index:any) => (
+                {content.bgImages.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1104,7 +1116,7 @@ export default function Editor() {
               </div>
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.posterImages?.map((img:any, index:any) => (
+                {content.posterImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1134,11 +1146,14 @@ export default function Editor() {
               </div>
               <h1>Foto de perfil:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.profileImages?.map((img:any, index:any) => (
+                {content.profileImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
-                      setContent((prev: any) => ({ ...prev, profileImage: img }))
+                      setContent((prev: any) => ({
+                        ...prev,
+                        profileImage: img,
+                      }))
                     }
                     className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gray-900 transition-all"
                   >
@@ -1308,7 +1323,7 @@ export default function Editor() {
           <div
             style={{ transform: `scale(${zoom})` }}
             className="origin-center transition-transform duration-300"
-            >
+          >
             {activeMode === "spotify" && (
               <SpotifyCanvas
                 ref={canvasRef}
@@ -1328,21 +1343,29 @@ export default function Editor() {
           </div>
         </div>
         {/* Zoom */}
-<div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" onClick={handleInputZoomMinus}>
+        <div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">
+          <button
+            className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"
+            onClick={handleInputZoomMinus}
+          >
             <ZoomOut className="w-4 h-4" />
           </button>
           <span className="text-xs font-medium text-gray-700 w-10 text-center">
             {Math.round(zoom * 100)}%
           </span>
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" onClick={handleInputZoomPlus}>
+          <button
+            className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"
+            onClick={handleInputZoomPlus}
+          >
             <ZoomIn className="w-4 h-4" />
           </button>
-          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded ml-1" onClick={handleInputZoomNormal}>
+          <button
+            className="p-1.5 text-gray-500 hover:bg-gray-100 rounded ml-1"
+            onClick={handleInputZoomNormal}
+          >
             <Maximize className="w-4 h-4" />
           </button>
         </div>
-
       </main>
     </div>
   );

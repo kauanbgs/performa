@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Film, Trash2, Loader2 } from "lucide-react";
+import { Music, Clapperboard, Film, Trash2, Loader2, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -139,6 +139,72 @@ export default function Home() {
                 </p>
               </div>
             </section>
+          </div>
+
+          {/* Lado Direito: Preview do Último Projeto */}
+          <div className="lg:col-span-4 self-stretch">
+            {loading ? (
+              <div className="h-full min-h-[400px] flex items-center justify-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              </div>
+            ) : projects.length > 0 ? (
+              <div className="group relative h-full flex flex-col bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-500">
+                <div 
+                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer"
+                  onClick={() => navigate(`/editor/${projects[0].id}`)}
+                >
+                  {projects[0].previewImage && projects[0].previewImage !== "/transparente.jpg" ? (
+                    <img 
+                      src={projects[0].previewImage} 
+                      alt={projects[0].title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-linear-to-br from-gray-50 to-gray-100">
+                      <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 transition-transform duration-500">
+                        {projects[0].type === "Post Musical" ? (
+                          <Music className="w-10 h-10 text-gray-700" />
+                        ) : (
+                          <Clapperboard className="w-10 h-10 text-gray-700" />
+                        )}
+                      </div>
+                      <p className="text-gray-400 font-secondary text-sm">Sem preview disponível</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-8">
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                        {projects[0].type || "Projeto"}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-primary text-gray-900 line-clamp-1">
+                      {projects[0].title}
+                    </h3>
+                  </div>
+
+                  <button
+                    onClick={() => navigate(`/editor/${projects[0].id}`)}
+                    className="w-full flex items-center justify-between px-6 py-4 bg-gray-900 text-white rounded-2xl font-secondary font-medium hover:bg-blue-950 transition-all"
+                  >
+                    <span>Continuar editando</span>
+                    <ArrowRight className="w-5 h-5 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 text-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                  <Clapperboard className="w-8 h-8 text-gray-300" />
+                </div>
+                <h3 className="text-gray-900 font-primary text-xl mb-2">Configure seu primeiro post</h3>
+                <p className="text-gray-500 font-secondary text-sm leading-relaxed">
+                  Crie um post musical ou cinéfilo para ver o preview aqui.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
