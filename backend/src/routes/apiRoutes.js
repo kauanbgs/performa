@@ -13,9 +13,6 @@ router.delete("/project/:id", auth, projectController.deleteProject);
 
 //      CONTROLLER USER     //
 router.post("/user", userController.createUser);
-router.get("/user", userController.readUser);
-router.put("/user", userController.updateUser);
-router.delete("/user", userController.deleteUser);
 router.post("/login", userController.loginUser);
 router.get("/profile", auth, userController.getProfile);
 
