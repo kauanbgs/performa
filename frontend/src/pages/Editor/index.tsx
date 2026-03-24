@@ -16,7 +16,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import "../../index.css";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import api from "../../services/axios";
@@ -101,23 +101,30 @@ export default function Editor() {
       .catch((err: any) => console.error("Erro ao carregar projeto:", err));
   }, [id]);
 
-  const [uploadedCoverImages, setUploadedCoverImages] = useState<string[]>([]);
-  const [uploadedBgImages, setUploadedBgImages] = useState<string[]>([]);
-  const [uploadedPosterImages, setUploadedPosterImages] = useState<string[]>(
-    [],
-  );
-  const [uploadedProfileImages, setUploadedProfileImages] = useState<string[]>(
-    [],
+
+  const uploadImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file); // arquivo real
+  formData.append("upload_preset", "performa"); // seu preset
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dhur4ejzm/image/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
   );
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-    });
-  };
+  const data = await res.json();
+
+  if (!res.ok) {
+    console.error("Erro Cloudinary:", data);
+    throw new Error(data.error?.message || "Erro no upload Cloudinary");
+  }
+
+  return data.secure_url; // URL final da imagem
+};
+
 
   const handleBlur = (field: keyof typeof content, value: string) => {
     setContent((prev: any) => ({ ...prev, [field]: value }));
@@ -128,32 +135,47 @@ export default function Editor() {
   };
 
   const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    type: "cover" | "bg" | "poster" | "profile",
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const base64 = await fileToBase64(file);
-      switch (type) {
-        case "cover":
-          setUploadedCoverImages((prev) => [base64, ...prev]);
-          setContent((prev: any) => ({ ...prev, coverImage: base64 }));
-          break;
-        case "bg":
-          setUploadedBgImages((prev) => [base64, ...prev]);
-          setContent((prev: any) => ({ ...prev, bgImage: base64 }));
-          break;
-        case "poster":
-          setUploadedPosterImages((prev) => [base64, ...prev]);
-          setContent((prev: any) => ({ ...prev, posterImage: base64 }));
-          break;
-        case "profile":
-          setUploadedProfileImages((prev) => [base64, ...prev]);
-          setContent((prev: any) => ({ ...prev, profileImage: base64 }));
-          break;
-      }
-    }
-  };
+  event: React.ChangeEvent<HTMLInputElement>,
+  type: "cover" | "bg" | "poster" | "profile"
+) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  // Preview imediato
+  const preview = URL.createObjectURL(file);
+
+  // Atualiza estado para mostrar preview
+  setContent((prev:any) => {
+    const imagesKey = type + "Images"; // ex: "coverImages"
+    const imageKey = type + "Image"; // ex: "coverImage"
+    return {
+      ...prev,
+      [imagesKey]: [...(prev[imagesKey] || []), preview],
+      [imageKey]: preview,
+    };
+  });
+
+  try {
+    // Upload Cloudinary
+    const url = await uploadImage(file);
+
+    setContent((prev:any) => {
+      const imagesKey = type + "Images";
+      const imageKey = type + "Image";
+      const newImages = [...(prev[imagesKey] || [])];
+      // substitui o preview pelo URL real
+      newImages[newImages.length - 1] = url;
+
+      return {
+        ...prev,
+        [imagesKey]: newImages,
+        [imageKey]: url,
+      };
+    });
+  } catch (err) {
+    console.error("Erro no upload:", err);
+  }
+};
 
   const divRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -773,7 +795,7 @@ export default function Editor() {
             <div className="flex flex-col gap-6">
               <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedCoverImages.map((img, index) => (
+                {content.CoverImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -818,7 +840,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {uploadedBgImages.map((img, index) => (
+                {content.bgImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -855,7 +877,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedProfileImages.map((img, index) => (
+                {content.ProfileImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -905,7 +927,7 @@ export default function Editor() {
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedBgImages.map((img, index) => (
+                {content.BgImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -942,7 +964,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedProfileImages.map((img, index) => (
+                {content.ProfileImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1013,7 +1035,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {uploadedBgImages.map((img, index) => (
+                {content.BgImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1043,7 +1065,7 @@ export default function Editor() {
               </div>
               <h1>Imagem de capa:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedPosterImages.map((img: string, index: number) => (
+                {content.PosterImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1073,7 +1095,7 @@ export default function Editor() {
               </div>
               <h1>Foto de perfil:</h1>
               <div className="grid grid-cols-2 gap-2">
-                {uploadedProfileImages.map((img: string, index: number) => (
+                {content.ProfileImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
