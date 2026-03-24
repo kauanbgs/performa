@@ -12,6 +12,9 @@ import {
   Download,
   Save,
   Loader2,
+  Maximize,
+  ZoomIn,
+  ZoomOut,
   Instagram,
   MessageCircle,
 } from "lucide-react";
@@ -52,6 +55,7 @@ export default function Editor() {
   const [activeTool, setActiveTool] = useState<string | null>(
     window.innerWidth < 768 ? null : "design",
   );
+  const [zoom, setZoom] = useState(1)
   const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
   const [loadingDownload, setLoadingDownload] = useState(false);
@@ -88,6 +92,15 @@ export default function Editor() {
     posts: 5,
   });
 
+  const handleInputZoomPlus = () => {
+  setZoom((prevZoom:any) => prevZoom + 0.05);
+  };
+  const handleInputZoomMinus = () => {
+    setZoom((prevZoom:any) => prevZoom - 0.05);
+  };
+  const handleInputZoomNormal = () => {
+  setZoom(1);
+};
   useEffect(() => {
     api
       .getProject(token, id)
@@ -1270,7 +1283,10 @@ export default function Editor() {
             if (window.innerWidth < 768) setActiveTool(null);
           }}
         >
-          <div className="transform scale-[0.55] sm:scale-[0.7] md:scale-90 lg:scale-100 origin-center transition-transform duration-300">
+          <div
+            style={{ transform: `scale(${zoom})` }}
+            className="origin-center transition-transform duration-300"
+            >
             {activeMode === "spotify" && (
               <SpotifyCanvas
                 ref={canvasRef}
@@ -1289,6 +1305,22 @@ export default function Editor() {
             )}
           </div>
         </div>
+        {/* Zoom */}
+<div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-lg p-1.5 flex items-center gap-1">
+          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" onClick={handleInputZoomMinus}>
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <span className="text-xs font-medium text-gray-700 w-10 text-center">
+            {Math.round(zoom * 100)}%
+          </span>
+          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded" onClick={handleInputZoomPlus}>
+            <ZoomIn className="w-4 h-4" />
+          </button>
+          <button className="p-1.5 text-gray-500 hover:bg-gray-100 rounded ml-1" onClick={handleInputZoomNormal}>
+            <Maximize className="w-4 h-4" />
+          </button>
+        </div>
+
       </main>
     </div>
   );
