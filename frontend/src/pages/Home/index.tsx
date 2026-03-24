@@ -139,6 +139,56 @@ export default function Home() {
                 </p>
               </div>
             </section>
+
+            {/* Projetos Recentes (Moved inside lg:col-span-8) */}
+            <div className="mt-16">
+              <div className="flex justify-between items-end mb-10">
+                <h2 className="text-3xl font-primary text-gray-900">
+                  Projetos Recentes
+                </h2>
+              </div>
+
+              <div className="space-y-2">
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                ) : (
+                  projects.map((project: any) => (
+                    <div
+                      key={project.id}
+                      className="flex items-center group rounded-xl hover:bg-gray-50 transition-colors px-2 py-3"
+                    >
+                      <div
+                        className="flex items-center flex-1 cursor-pointer"
+                        onClick={() => navigate(`/editor/${project.id}`)}
+                      >
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-white transition-colors border border-gray-100 shrink-0">
+                          <Clapperboard className="w-5 h-5 stroke-[1.5]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-primary text-xl text-gray-900 mb-1 truncate">
+                            {project.title}
+                          </h4>
+                          <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+                            {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Botão de deletar */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
+                        className="ml-4 p-2 text-gray-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                        title="Deletar projeto"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Lado Direito: Preview do Último Projeto */}
@@ -157,7 +207,7 @@ export default function Home() {
                     <img 
                       src={projects[0].previewImage} 
                       alt={projects[0].title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-linear-to-br from-gray-50 to-gray-100">
@@ -208,57 +258,6 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-          {/* Recent Projects (Left - 7 cols) */}
-          <div className="lg:col-span-7">
-            <div className="flex justify-between items-end mb-10">
-              <h2 className="text-3xl font-primary text-gray-900">
-                Projetos Recentes
-              </h2>
-            </div>
-
-            <div className="space-y-2">
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                </div>
-              ) : (
-                projects.map((project: any) => (
-                <div
-                  key={project.id}
-                  className="flex items-center group rounded-xl hover:bg-gray-50 transition-colors px-2 py-3"
-                >
-                  <div
-                    className="flex items-center flex-1 cursor-pointer"
-                    onClick={() => navigate(`/editor/${project.id}`)}
-                  >
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-white transition-colors border border-gray-100 shrink-0">
-                      <Clapperboard className="w-5 h-5 stroke-[1.5]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-primary text-xl text-gray-900 mb-1 truncate">
-                        {project.title}
-                      </h4>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                        {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Botão de deletar */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
-                    className="ml-4 p-2 text-gray-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors shrink-0"
-                    title="Deletar projeto"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                )
-              ))}
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );

@@ -1086,7 +1086,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {content.bgImages.map((img: any, index: any) => (
+                {content.bgImages?.map((img: any, index: any) => (
                   <div
                     key={index}
                     onClick={() =>
