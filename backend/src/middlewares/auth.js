@@ -20,7 +20,7 @@ module.exports = function auth(req, res, next) {
         if (err) {
             return res.status(401).json({ error: "Token inválido" });
         }
-        req.userId = decoded.id; // o id vem do token gerado no login
+        req.userId = decoded.id;
         return next();
     });
 };

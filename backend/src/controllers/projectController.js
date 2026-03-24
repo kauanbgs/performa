@@ -101,6 +101,14 @@ module.exports = class projectController {
       });
     }
 
+    const existing = await prisma.project.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing || existing.userId !== userId) {
+      return res.status(403).json({ error: "Não autorizado" });
+    }
+
     try {
       const project = await prisma.project.update({
         where: {
@@ -120,65 +128,70 @@ module.exports = class projectController {
   }
 
   static async exportProject(req, res) {
-    let browser;
+  let page;
 
-    try {
-      browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
+  try {
+    const browser = await getBrowser();
 
-      const page = await browser.newPage();
+    page = await browser.newPage();
 
-      await page.setViewport({
-
-        width: 500,
-        height: 700,
-        deviceScaleFactor: 2,
-      });
-
-      await page.evaluateOnNewDocument((data) => {
-        window.INJECTED_EXPORT_DATA = data;
-      }, req.body);
-
-      const frontendUrl =
-        req.headers.origin || "https://performa-one.vercel.app";
-      const url = `${frontendUrl}/export-template`;
-      await page.goto(url, { waitUntil: "networkidle0" });
-
-      await page.waitForSelector("#capture", { visible: true });
-
-      const element = await page.$("#capture");
-
-      const boundingBox = await element.boundingBox();
-
-      const image = await page.screenshot({
-        type: "png",
-        clip: {
-          x: boundingBox.x,
-          y: boundingBox.y,
-          width: boundingBox.width,
-          height: boundingBox.height,
-      },
+    await page.setViewport({
+      width: 500,
+      height: 700,
+      deviceScaleFactor: 2,
     });
 
-      res.set({
-        "Content-Type": "image/png",
-        "Content-Length": image.length,
-      });
+    page.setDefaultTimeout(15000);
 
-      res.send(image);
-    } catch (error) {
-      console.error("ERRO REAL:", error);
-      return res.status(500).json({
-        error: "Erro ao gerar imagem",
-        details: error.message,
-        stack: error.stack,
-      });
-    } finally {
-      if (browser) await browser.close();
+    await page.evaluateOnNewDocument((data) => {
+      window.INJECTED_EXPORT_DATA = data;
+    }, req.body);
+
+    const frontendUrl =
+      req.headers.origin || "https://performa-one.vercel.app";
+
+    const url = `${frontendUrl}/export-template`;
+
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+
+    await page.waitForSelector("#capture", { visible: true });
+
+    const element = await page.$("#capture");
+
+    if (!element) {
+      throw new Error("Elemento #capture não encontrado");
     }
+
+    const boundingBox = await element.boundingBox();
+
+    if (!boundingBox) {
+      throw new Error("Bounding box inválido");
+    }
+
+    const image = await page.screenshot({
+      type: "png",
+      clip: boundingBox,
+    });
+
+    res.set({
+      "Content-Type": "image/png",
+      "Content-Length": image.length,
+    });
+
+    return res.send(image);
+
+  } catch (error) {
+    console.error("ERRO REAL:", error);
+
+    return res.status(500).json({
+      error: "Erro ao gerar imagem",
+      details: error.message,
+    });
+
+  } finally {
+    if (page) await page.close();
   }
+}
 
   static async deleteProject(req, res) {
     const { id } = req.params;

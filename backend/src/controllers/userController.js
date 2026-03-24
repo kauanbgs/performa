@@ -1,6 +1,6 @@
 const prisma = require("../connect");
 const bcrypt = require("bcrypt");
-const SALT = 10;
+const SALT = 8;
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 
@@ -21,7 +21,8 @@ module.exports = class userController {
           password: hashPassword,
         },
       });
-      
+
+      delete user.password;
       res.status(201).json({ message: "Usuário criado com sucesso!", user });
     } catch (err) {
       console.error("Erro ao criar usuário:", err);
@@ -32,49 +33,7 @@ module.exports = class userController {
     }
   }
 
-  static async readUser(req, res) {
-    try {
-      const users = await prisma.user.findMany();
-      return res.status(200).json(users);
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ error: "Erro ao buscar usuários", err: err.message });
-    }
-  }
 
-
-  static async updateUser(req, res) {
-    try {
-      const { id, name, email, password } = req.body;
-      
-      const updateData = { name, email };
-      if (password) {
-        updateData.password = await bcrypt.hash(password, SALT);
-      }
-
-      const user = await prisma.user.update({
-        where: { id },
-        data: updateData,
-      });
-      res.status(200).json({ message: "Usuário atualizado com sucesso!", user });
-    } catch (err) {
-      console.error("Erro ao atualizar usuário:", err);
-      res.status(500).json({ error: "Erro interno ao atualizar usuário.", details: err.message });
-    }
-  }
-
-  static async deleteUser(req, res) {
-    try {
-      const { id } = req.body;
-      const user = await prisma.user.delete({
-        where: { id },
-      });
-      res.status(200).json({ message: "Usuário deletado com sucesso!", user });
-    } catch (err) {
-      console.error("Erro ao deletar usuário:", err);
-      res.status(500).json({ error: "Erro interno ao deletar usuário.", details: err.message });
-    }
-  }
 
   static async loginUser(req, res) {
     try {
