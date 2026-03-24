@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import NotFound from "./pages/404/404Page";
 import Planos from "./pages/Planos";
+import Ideias from "./pages/Ideias";
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/planostestfordev" element={<Planos />} />
+          <Route path="/ideias" element={<Ideias />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ProjectProvider>

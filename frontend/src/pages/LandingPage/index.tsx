@@ -17,13 +17,6 @@ export default function LandingPage() {
     <div className="relative font-sans overflow-x-hidden">
       {/* Estilos Globais e Animações */}
       <style>{`
-        :root {
-          --font-primary: 'Playfair Display', serif;
-          --font-secondary: 'Inter', sans-serif;
-        }
-        
-        .font-primary { font-family: var(--font-primary); }
-        .font-secondary { font-family: var(--font-secondary); }
         
         /* Simulação da fonte customizada com fallback */
         .font-melodrame {
