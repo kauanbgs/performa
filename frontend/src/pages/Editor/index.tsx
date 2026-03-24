@@ -376,7 +376,10 @@ export default function Editor() {
               </button>
               {/* Template Item 2 */}
               <button
-                onClick={() => setActiveMode("letterboxd")}
+                onClick={() => {
+                  setActiveMode("letterboxd")
+                  content.itemTitle = "Nome do filme"
+                }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
                 <div
@@ -392,6 +395,8 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("whatsapp")
+                  content.itemTitle = "Kauan Plaza"
+                  
                   
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
