@@ -795,7 +795,7 @@ export default function Editor() {
             <div className="flex flex-col gap-6">
               <h1>Capa do Álbum</h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.CoverImages?.map((img:any, index:any) => (
+                {content.coverImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -877,7 +877,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.ProfileImages?.map((img:any, index:any) => (
+                {content.profileImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -927,7 +927,7 @@ export default function Editor() {
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {content.BgImages?.map((img:any, index:any) => (
+                {content.bgImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -964,7 +964,7 @@ export default function Editor() {
                 Foto de Perfil
               </h1>
               <div className="grid grid-cols-2 gap-2">
-                {content.ProfileImages?.map((img:any, index:any) => (
+                {content.profileImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
@@ -1035,7 +1035,7 @@ export default function Editor() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {content.BgImages?.map((img:any, index:any) => (
+                {content.bgImages?.map((img:any, index:any) => (
                   <div
                     key={index}
                     onClick={() =>
