@@ -152,7 +152,6 @@ module.exports = class projectController {
     ],
   });
 
-  // Opcional: fecha o browser automaticamente se o processo Node encerrar
   process.on("exit", async () => {
     if (browserInstance) await browserInstance.close();
   });
@@ -171,7 +170,7 @@ module.exports = class projectController {
       deviceScaleFactor: 2,
     });
 
-    page.setDefaultTimeout(15000);
+    page.setDefaultTimeout(30000);
 
     await page.evaluateOnNewDocument((data) => {
       window.INJECTED_EXPORT_DATA = data;
@@ -182,7 +181,7 @@ module.exports = class projectController {
 
     const url = `${frontendUrl}/export-template`;
 
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.goto(url, { waitUntil: "networkidle0" });
 
     await page.waitForSelector("#capture", { visible: true });
 
