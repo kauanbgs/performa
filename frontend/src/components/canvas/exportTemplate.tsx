@@ -3,7 +3,6 @@ import SpotifyCanvas from "./spotifyCanvas";
 import LetterboxdCanvas from "./letterboxdCanvas";
 import WhatsappCanvas from "./whatsappCanvas";
 import InstagramCanvas from "./instagramCanvas";
-import TwitterCanvas from "./twitterCanvas";
 
 interface ExportData {
   template: string;
@@ -41,9 +40,6 @@ export default function ExportTemplate() {
       )}
       {data.template === "instagram" && (
         <InstagramCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
-      )}
-      {data.template === "twitter" && (
-        <TwitterCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
       )}
     </div>
   );

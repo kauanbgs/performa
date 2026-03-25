@@ -17,7 +17,6 @@ import {
   ZoomOut,
   Instagram,
   MessageCircle,
-  Twitter,
   Trash2,
 } from "lucide-react";
 import "../../index.css";
@@ -27,7 +26,6 @@ import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import api from "../../services/axios";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 import InstagramCanvas from "../../components/canvas/instagramCanvas";
-import TwitterCanvas from "../../components/canvas/twitterCanvas";
 
 export default function Editor() {
   const navigate = useNavigate();
@@ -93,16 +91,6 @@ export default function Editor() {
     ],
     followers: 100,
     posts: 5,
-    tweetText: "",
-    username: "",
-    isVerified: false,
-    retweets: "0",
-    likes: "0",
-    quotes: "0",
-    bookmarks: "0",
-    views: "0",
-    time: "10:00 PM",
-    date: "Oct 24, 2023",
   });
 
   const handleInputZoomPlus = () => {
@@ -492,36 +480,6 @@ export default function Editor() {
                 </div>
                 <span className="text-xs font-medium text-gray-900 text-center">
                   Fake Instagram
-                </span>
-              </button>
-              <button
-                onClick={() => {
-                  setActiveMode("twitter");
-                  setWidth(410);
-                  setHeight(280);
-                  content.bgColor = "#000000";
-                  content.bgImage = "";
-                  content.itemTitle = "Nome de Usuário";
-                  content.username = "usuario";
-                  content.tweetText = "Este é um tweet fake criado no Performa!";
-                  content.isVerified = true;
-                  content.retweets = "120";
-                  content.quotes = "45";
-                  content.likes = "2.4K";
-                  content.bookmarks = "89";
-                  content.views = "1.2M";
-                  content.time = "10:00 PM";
-                  content.date = "Oct 24, 2023";
-                }}
-                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
-              >
-                <div
-                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "twitter" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
-                >
-                  <Twitter className="w-8 h-8 text-gray-400" />
-                </div>
-                <span className="text-xs font-medium text-gray-900 text-center">
-                  Fake Twitter/X
                 </span>
               </button>
             </div>
@@ -930,123 +888,6 @@ export default function Editor() {
             </div>
           )}
 
-          {activeTool === "text" && activeMode === "twitter" && (
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Nome
-                </label>
-                <input
-                  type="text"
-                  value={content.itemTitle}
-                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
-                  placeholder="Nome de Exibição"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Username (@)
-                </label>
-                <input
-                  type="text"
-                  value={content.username}
-                  onChange={(e) => handleInputChange("username", e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
-                  placeholder="usuario"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Conteúdo do Tweet
-                </label>
-                <textarea
-                  value={content.tweetText}
-                  onChange={(e) => handleInputChange("tweetText", e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[100px]"
-                  placeholder="O que está acontecendo?"
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                 <input
-                    type="checkbox"
-                    checked={content.isVerified}
-                    onChange={(e) => setContent((prev: any) => ({ ...prev, isVerified: e.target.checked }))}
-                    id="verified-toggle"
-                    className="w-4 h-4"
-                 />
-                 <label htmlFor="verified-toggle" className="text-sm font-medium text-gray-700">Verificado</label>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Hora</label>
-                  <input
-                    type="text"
-                    value={content.time}
-                    onChange={(e) => handleInputChange("time", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Data</label>
-                  <input
-                    type="text"
-                    value={content.date}
-                    onChange={(e) => handleInputChange("date", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Views</label>
-                  <input
-                    type="text"
-                    value={content.views}
-                    onChange={(e) => handleInputChange("views", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Likes</label>
-                  <input
-                    type="text"
-                    value={content.likes}
-                    onChange={(e) => handleInputChange("likes", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">RTs</label>
-                  <input
-                    type="text"
-                    value={content.retweets}
-                    onChange={(e) => handleInputChange("retweets", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Quotes</label>
-                  <input
-                    type="text"
-                    value={content.quotes}
-                    onChange={(e) => handleInputChange("quotes", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Bookmarks</label>
-                  <input
-                    type="text"
-                    value={content.bookmarks}
-                    onChange={(e) => handleInputChange("bookmarks", e.target.value)}
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           {activeTool === "uploads" && activeMode === "spotify" && (
             <div className="flex flex-col gap-6">
               <h1>Capa do Álbum</h1>
@@ -1271,43 +1112,6 @@ export default function Editor() {
             </div>
           )}
 
-          {activeTool === "uploads" && activeMode === "twitter" && (
-            <div className="flex flex-col gap-6">
-              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                Foto de Perfil
-              </h1>
-              <div className="grid grid-cols-2 gap-2">
-                {content.profileImages?.map((img: any, index: any) => (
-                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
-                    <img
-                      src={img}
-                      alt={`Upload ${index}`}
-                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
-                      className="w-full h-full object-cover cursor-pointer"
-                    />
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
-                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
-                  <div className="flex flex-col items-center gap-2 text-gray-500">
-                    <Download className="w-6 h-6 rotate-180" />
-                    <span className="text-sm font-medium">Fazer Upload</span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(e, "profile")}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
-          )}
 
           {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
@@ -1582,9 +1386,7 @@ export default function Editor() {
             {activeMode === "instagram" && (
               <InstagramCanvas content={content} handleBlur={handleBlur} />
             )}
-            {activeMode === "twitter" && (
-              <TwitterCanvas ref={canvasRef} content={content} handleBlur={handleBlur} />
-            )}
+
           </div>
         </div>
         {/* Zoom */}
