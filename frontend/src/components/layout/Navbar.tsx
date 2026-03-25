@@ -30,7 +30,7 @@ export const Navbar = () => {
         <Link to="/planos" className="hover:text-black transition-colors">
           Planos
         </Link>
-        <Link to="/login" className="hover:text-black transition-colors">
+        <Link to="/" className="hover:text-black transition-colors">
           Criar
         </Link>
         <Link to="/ideias" className="hover:text-black transition-colors">

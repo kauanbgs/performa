@@ -132,6 +132,8 @@ module.exports = class projectController {
 
   static async exportProject(req, res) {
   let page;
+  const width = req.body.width;
+  const height = req.body.height;
   async function getBrowser() {
   if (browserInstance) {
     try {
@@ -165,8 +167,8 @@ module.exports = class projectController {
     page = await browser.newPage();
 
     await page.setViewport({
-      width: 500,
-      height: 700,
+      width: width,
+      height: height,
       deviceScaleFactor: 2,
     });
 

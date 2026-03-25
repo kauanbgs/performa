@@ -80,7 +80,7 @@ export default function Login() {
               Recuperar senha
             </Link>
           </Text>
-          <div className="min-h-[1.25rem] mt-2">
+          <div className="min-h-[1.25rem] mt-2 font-secondary">
             {feedback.message && (
               <span className={`text-sm ${feedback.type === "error" ? "text-red-500" : "text-green-500"}`}>
                 {feedback.message}
