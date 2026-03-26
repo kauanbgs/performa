@@ -76,8 +76,8 @@ export default function Ideias() {
           }, "letterboxd")}}>Copiar Projeto</button>
         </div>
         <div className="flex flex-col items-center cursor-pointer gap-2">
-          <button onClick={() => {window.open("/cristiano_ronaldo.jpg", "_blank")}}>
-          <img src="/cristiano_ronaldo.jpg" alt="" className="w-50 rounded-xl border-2 border-gray-200 shadow-lg mt-10 cursor-pointer"/>
+          <button onClick={() => {window.open("/cristiano_ronaldo.png", "_blank")}}>
+          <img src="/cristiano_ronaldo.png" alt="" className="w-50 rounded-xl border-2 border-gray-200 shadow-lg mt-10 cursor-pointer"/>
           </button>
           <button className="bg-black text-white w-full px-5 py-2 sm:px-6 sm:py-2.5 rounded-full text-sm font-medium hover:bg-gray-900 transition-all whitespace-nowrap font-secondary cursor-pointer" onClick={() => {createProject("Papo com Cristiano", {
             title: "Papo com Cristiano",

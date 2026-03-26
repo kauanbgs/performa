@@ -9,15 +9,12 @@ export default function Footer() {
                         </span>
 
                     </div>
-                    <div className="flex gap-6">
-                        <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors font-secondary text-sm">
-                            Termos de Uso
+                    <div className="flex gap-6">  
+                        <a href="https://www.linkedin.com/in/kauanbgs/" className="text-gray-400 hover:text-gray-600 transition-colors font-secondary text-sm" target="_blank">
+                            Linkedin
                         </a>
-                        <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors font-secondary text-sm">
-                            Política de Privacidade
-                        </a>
-                        <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors font-secondary text-sm">
-                            Contato
+                        <a href="https://github.com/kauanbgs" className="text-gray-400 hover:text-gray-600 transition-colors font-secondary text-sm" target="_blank">
+                            GitHub
                         </a>
                     </div>
                 </div>
