@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle } from "lucide-react";
+import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -38,13 +38,13 @@ export default function Home() {
     fetchData();
   }, [token]);
 
-  const createProject = (title: string) => {
+  const createProject = (title: string, content: any, mode: string) => {
     if (projects.length >= 3) {
       alert("Você atingiu o limite de 3 projetos.");
       return;
     }
     const defaultTitle = title || "Novo Projeto";
-    api.postProject(token, { title: defaultTitle }).then((response: any) => {
+    api.postProject(token, { title: defaultTitle, content: content, mode: mode }).then((response: any) => {
       navigate(`/editor/${response.data.id}`);
     }).catch((err: any) => {
       const msg = err?.response?.data?.error;
@@ -70,7 +70,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] font-sans">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
 
       {/* Modal de Confirmação */}
@@ -119,7 +119,7 @@ export default function Home() {
             {/* Action Cards */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Performático")}>
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Performático", {}, "spotify")}>
                 <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
                   Post Performático
@@ -130,7 +130,7 @@ export default function Home() {
               </div>
 
               {/* Card 2 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Conversa")}>
+              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Conversa", {}, "whatsapp")}>
                 <MessageCircle className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
                   Conversa
@@ -172,7 +172,7 @@ export default function Home() {
                             {project.title}
                           </h4>
                           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                            {project.type} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                            {project.mode === 'spotify' ? 'Post Musical' : project.mode === 'whatsapp' ? 'Conversa' : project.mode === 'letterboxd' ? 'Filmes' : project.mode === 'instagram' ? 'Instagram' : 'Projeto'} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
                           </p>
                         </div>
                       </div>
@@ -213,8 +213,12 @@ export default function Home() {
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-linear-to-br from-gray-50 to-gray-100">
                       <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 transition-transform duration-500">
-                        {projects[0].type === "Post Musical" ? (
+                        {projects[0].mode === "spotify" ? (
                           <Music className="w-10 h-10 text-gray-700" />
+                        ) : projects[0].mode === "whatsapp" ? (
+                          <MessageCircle className="w-10 h-10 text-gray-700" />
+                        ) : projects[0].mode === "letterboxd" ? (
+                          <Film className="w-10 h-10 text-gray-700" />
                         ) : (
                           <Clapperboard className="w-10 h-10 text-gray-700" />
                         )}
@@ -228,7 +232,7 @@ export default function Home() {
                   <div className="mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
-                        {projects[0].type || "Projeto"}
+                        {projects[0].mode === 'spotify' ? 'Post Musical' : projects[0].mode === 'whatsapp' ? 'Conversa' : projects[0].mode === 'letterboxd' ? 'Filmes' : projects[0].mode === 'instagram' ? 'Instagram' : 'Projeto'}
                       </span>
                     </div>
                     <h3 className="text-2xl font-primary text-gray-900 line-clamp-1">

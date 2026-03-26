@@ -23,13 +23,13 @@ export default function Ideias() {
     fetchData();
   }, [token]);
 
-  const createProject = (title: string, content: any) => {
+  const createProject = (title: string, content: any, mode: string) => {
     if (projects.length >= 3) {
       alert("Você atingiu o limite de 3 projetos.");
       return;
     }
     const defaultTitle = title || "Novo Projeto";
-    api.postProject(token, { title: defaultTitle, content: content }).then((response: any) => {
+    api.postProject(token, { title: defaultTitle, content: content, mode: mode }).then((response: any) => {
       navigate(`/editor/${response.data.id}`);
     }).catch((err: any) => {
       const msg = err?.response?.data?.error;
@@ -59,8 +59,23 @@ export default function Ideias() {
             profileImage: "/ult_rom.png",
             rating: 5,
             glassmorphism: true
-          })}}>Copiar Projeto</button>
+          }, "spotify")}}>Copiar Projeto</button>
         </div>
+        <div className="flex flex-col items-center cursor-pointer gap-2">
+          <button onClick={() => {window.open("/marty_supreme.png", "_blank")}}>
+          <img src="/marty_supreme.png" alt="" className="w-50 rounded-xl border-2 border-gray-200 shadow-lg mt-10 cursor-pointer"/>
+          </button>
+          <button className="bg-black text-white w-full px-5 py-2 sm:px-6 sm:py-2.5 rounded-full text-sm font-medium hover:bg-gray-900 transition-all whitespace-nowrap font-secondary cursor-pointer" onClick={() => {createProject("Marty Supreme", {
+            title: "Marty Supreme",
+            itemTitle: "Marty Supreme",
+            bgImage: "/martybg.jpg",
+            posterImage: "/martyposter.jpg",
+            profileImage: "/euuu.png",
+            rating: 5,
+            glassmorphism: true
+          }, "letterboxd")}}>Copiar Projeto</button>
+        </div>
+
       </div>
     </>
   );

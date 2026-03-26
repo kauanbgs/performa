@@ -9,7 +9,6 @@ export const Navbar = () => {
 
   return (
     <nav className="w-full px-6 py-6 flex items-center justify-between relative z-20 max-w-7xl mx-auto">
-      {/* 1. Lado Esquerdo (Logo) - flex-1 empurra o resto */}
       <div className="flex-1 flex justify-start">
         <Link to="/" className="text-3xl font-bold italic font-primary tracking-tight">
           p.me
@@ -19,9 +18,7 @@ export const Navbar = () => {
       {/* 2. Centro (Menu de Links) */}
       <div
         className={
-          token
-            ? "hidden md:flex justify-center gap-4 md:gap-8 text-sm font-medium text-gray-600 font-secondary"
-            : "flex justify-center gap-4 md:gap-8 text-sm font-medium text-gray-600 font-secondary"
+          token ? "flex justify-center gap-4 md:gap-8 text-sm font-medium text-gray-600 font-secondary" : "hidden" 
         }
       >
         <Link to="/" className="hover:text-black transition-colors">

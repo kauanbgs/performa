@@ -81,11 +81,9 @@ export default function LandingPage() {
               musicais em segundos. Minimalista, elegante e pronto para
               compartilhar.
             </p>
-
-            {/* CTA Button — visível apenas no mobile */}
             <Link
               to="/login"
-              className="mt-8 lg:hidden bg-[#222] text-white px-8 py-3.5 rounded-full text-base font-medium hover:bg-black transition-all hover:scale-105 font-primary tracking-wide shadow-lg font-secondary"
+              className="mt-8 bg-[#222] text-white px-8 py-3.5 rounded-full text-base font-medium hover:bg-black transition-all hover:scale-105 font-primary tracking-wide shadow-lg font-secondary"
             >
               Começar agora →
             </Link>
@@ -270,7 +268,7 @@ export default function LandingPage() {
           </p>
           <Link
             to="/login"
-            className="bg-[#222] text-white px-10 py-4 rounded-full text-lg font-medium hover:bg-black transition-all hover:scale-105 inline-block font-primary tracking-wide"
+            className="bg-[#222] text-white px-10 py-4 rounded-full text-lg font-medium hover:bg-black transition-all hover:scale-105 inline-block font-secondary tracking-wide"
           >
             Começar
           </Link>

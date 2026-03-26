@@ -112,6 +112,7 @@ export default function Editor() {
             previewImage:
               projectData.content.previewImage || "/transparente.jpg",
           });
+          setActiveMode(projectData.mode);
         }
       })
       .catch((err: any) => console.error("Erro ao carregar projeto:", err));

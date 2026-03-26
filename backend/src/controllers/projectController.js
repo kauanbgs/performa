@@ -22,7 +22,7 @@ const defaultContent = {
 
 module.exports = class projectController {
   static async createProject(req, res) {
-    const { title, content } = req.body;
+    const { title, content, mode } = req.body;
     const userId = req.userId;
 
     if (!title) {
@@ -44,7 +44,7 @@ module.exports = class projectController {
       }
 
       const project = await prisma.project.create({
-        data: { title, userId, content: content || defaultContent },
+        data: { title, userId, content: content || defaultContent, mode },
       });
       return res
         .status(201)
@@ -95,7 +95,7 @@ module.exports = class projectController {
   }
 
   static async updateProject(req, res) {
-    const { title, previewImage, ...content } = req.body;
+    const { title, previewImage, mode, ...content } = req.body;
     const userId = req.userId;
 
     if (!title) {
@@ -117,7 +117,7 @@ module.exports = class projectController {
         where: {
           id: req.params.id,
         },
-        data: { title, userId, content, updatedAt: new Date(), previewImage },
+        data: { title, userId, content, updatedAt: new Date(), previewImage, mode },
       });
       return res
         .status(200)
