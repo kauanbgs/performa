@@ -7,8 +7,6 @@ import {
   Home,
   Film,
   Disc,
-  Undo,
-  Redo,
   Download,
   Save,
   Loader2,
