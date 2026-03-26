@@ -9,6 +9,9 @@ import Cadastro from "./pages/Cadastro";
 import NotFound from "./pages/404/404Page";
 import Planos from "./pages/Planos";
 import Ideias from "./pages/Ideias";
+
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +27,7 @@ function App() {
           <Route path="/ideias" element={<Ideias />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <SpeedInsights />
       </ProjectProvider>
     </BrowserRouter>
   );
