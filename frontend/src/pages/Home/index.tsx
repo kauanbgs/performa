@@ -1,5 +1,5 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle, Film } from "lucide-react";
+import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle, Film, Instagram } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -165,7 +165,7 @@ export default function Home() {
                         onClick={() => navigate(`/editor/${project.id}`)}
                       >
                         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-white transition-colors border border-gray-100 shrink-0">
-                          <Clapperboard className="w-5 h-5 stroke-[1.5]" />
+                          {project.mode === 'spotify' ? <Music className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'whatsapp' ? <MessageCircle className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'letterboxd' ? <Clapperboard className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'instagram' ? <Instagram className="w-5 h-5 stroke-[1.5]" /> : <Clapperboard className="w-5 h-5 stroke-[1.5]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-primary text-xl text-gray-900 mb-1 truncate">
