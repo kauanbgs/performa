@@ -199,7 +199,7 @@ export default function Home() {
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
               </div>
             ) : projects.length > 0 ? (
-              <div className="group relative h-full flex flex-col bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-500">
+              <div className="group relative h-full flex flex-col rounded-3xl overflow-hidden transition-all duration-500">
                 <div 
                   className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border-2 border-gray-200 rounded-3xl"
                   onClick={() => navigate(`/editor/${projects[0].id}`)}
@@ -238,7 +238,7 @@ export default function Home() {
 
                   <button
                     onClick={() => navigate(`/editor/${projects[0].id}`)}
-                    className="w-full flex items-center justify-between px-6 py-4 bg-gray-900 text-white rounded-2xl font-secondary font-medium hover:bg-blue-950 transition-all"
+                    className="w-full flex items-center justify-between px-6 py-4 bg-gray-900 text-white rounded-2xl font-secondary font-medium transition-all"
                   >
                     <span>Continuar editando</span>
                     <ArrowRight className="w-5 h-5 transition-transform" />
