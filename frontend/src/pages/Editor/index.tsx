@@ -113,6 +113,13 @@ export default function Editor() {
               projectData.content.previewImage || "/transparente.jpg",
           });
           setActiveMode(projectData.mode);
+          if (projectData.mode === "whatsapp" || projectData.mode === "instagram") {
+            setWidth(390);
+            setHeight(780);
+          } else {
+            setWidth(500);
+            setHeight(700);
+          }
         }
       })
       .catch((err: any) => console.error("Erro ao carregar projeto:", err));
