@@ -1337,12 +1337,6 @@ export default function Editor() {
           </div>
 
           <div className="flex items-center gap-1 md:gap-2 shrink-0">
-            <button className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <Undo className="w-5 h-5" />
-            </button>
-            <button className="hidden md:block p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <Redo className="w-5 h-5" />
-            </button>
             <div className="hidden md:block h-6 w-px bg-gray-200 mx-2"></div>
             <button
               onClick={handleDownload}
