@@ -41,7 +41,7 @@ export default function Editor() {
     setLoading(true);
 
     try {
-      await api.updateProject(token, id, content);
+      await api.updateProject(token, id, { ...content, mode: activeMode });
     } catch (err) {
       console.error(err);
     }
@@ -110,7 +110,7 @@ export default function Editor() {
             title: projectData.title,
             ...projectData.content,
             previewImage:
-              projectData.content.previewImage || "/transparente.jpg",
+              projectData.previewImage || projectData.content.previewImage || "/transparente.jpg",
           });
           setActiveMode(projectData.mode);
           if (projectData.mode === "whatsapp" || projectData.mode === "instagram") {
@@ -239,7 +239,7 @@ export default function Editor() {
     setLoadingDownload(true);
     try {
       // Salva antes de exportar
-      await api.updateProject(token, id, content);
+      await api.updateProject(token, id, { ...content, mode: activeMode });
 
       const response = await fetch(
         "https://performa-i6sk.onrender.com/performa/export",
@@ -267,7 +267,7 @@ export default function Editor() {
       // Atualizar o estado e persistir no banco de dados
       setContent((prev: any) => {
         const updated = { ...prev, previewImage: previewUrl };
-        api.updateProject(token, id, updated); // Salva no banco
+        api.updateProject(token, id, { ...updated, mode: activeMode }); // Salva no banco
         return updated;
       });
 

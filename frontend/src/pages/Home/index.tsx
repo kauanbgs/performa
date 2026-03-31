@@ -3,8 +3,10 @@ import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle, Film, 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useRef } from "react";
 import api from "../../services/axios";
 import Footer from "../../components/layout/Footer";
+import { FastAverageColor } from "fast-average-color";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -19,6 +21,9 @@ export default function Home() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bgColor, setBgColor] = useState<string>("#ffffff");
+  const imgRef = useRef(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +42,18 @@ export default function Home() {
     };
     fetchData();
   }, [token]);
+
+  const handleImageLoad = () => {
+    if (imgRef.current) {
+      const fac = new FastAverageColor();
+      try {
+        const color = fac.getColor(imgRef.current);
+        setBgColor(color.hex);
+      } catch (e) {
+        console.error("FastAverageColor error:", e);
+      }
+    }
+  };
 
   const createProject = (title: string, content: any, mode: string) => {
     if (projects.length >= 3) {
@@ -70,8 +87,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen font-sans">
       <Navbar />
+      <div className="w-100 h-100 flex blur-3xl rounded-full absolute top-0 left-0" style={{ backgroundColor: bgColor, opacity: 0.3 }}></div>
 
       {/* Modal de Confirmação */}
       {confirmDeleteId && (
@@ -172,7 +190,7 @@ export default function Home() {
                             {project.title}
                           </h4>
                           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
-                            {project.mode === 'spotify' ? 'Post Musical' : project.mode === 'whatsapp' ? 'Conversa' : project.mode === 'letterboxd' ? 'Filmes' : project.mode === 'instagram' ? 'Instagram' : 'Projeto'} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                            {project.mode === 'spotify' ? 'Post Musical' : project.mode === 'whatsapp' ? 'Conversa' : project.mode === 'letterboxd' ? 'Filmes' : project.mode === 'instagram' ? 'Instagram' : 'Projeto'} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
                       </div>
@@ -200,13 +218,16 @@ export default function Home() {
               </div>
             ) : projects.length > 0 ? (
               <div className="group relative h-full flex flex-col rounded-3xl overflow-hidden transition-all duration-500">
-                <div 
+                <div
                   className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border-2 border-gray-200 rounded-3xl"
                   onClick={() => navigate(`/editor/${projects[0].id}`)}
                 >
                   {projects[0].previewImage && projects[0].previewImage !== "/transparente.jpg" ? (
-                    <img 
-                      src={projects[0].previewImage} 
+                    <img
+                      crossOrigin="anonymous"
+                      ref={imgRef}
+                      onLoad={handleImageLoad}
+                      src={projects[0].previewImage}
                       alt={projects[0].title}
                       className="w-full h-full object-cover"
                     />
