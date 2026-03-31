@@ -7,6 +7,7 @@ import { useRef } from "react";
 import api from "../../services/axios";
 import Footer from "../../components/layout/Footer";
 import { FastAverageColor } from "fast-average-color";
+import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ export default function Home() {
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bgColor, setBgColor] = useState<string>("#ffffff");
+  const [bgColor2, setBgColor2] = useState<string>("#ffffff");
+  const [bgColor3, setBgColor3] = useState<string>("#ffffff");
+  const [bgColor4, setBgColor4] = useState<string>("#ffffff");
+  const [bgColor5, setBgColor5] = useState<string>("#ffffff");
   const imgRef = useRef(null);
 
 
@@ -43,12 +48,33 @@ export default function Home() {
     fetchData();
   }, [token]);
 
+  // Lightens an RGB color into a soft pastel
+  const toPastel = (r: number, g: number, b: number, mix = 0.25): string => {
+    const pr = Math.round(r + (255 - r) * mix);
+    const pg = Math.round(g + (255 - g) * mix);
+    const pb = Math.round(b + (255 - b) * mix);
+    return `rgb(${pr}, ${pg}, ${pb})`;
+  };
+
   const handleImageLoad = () => {
     if (imgRef.current) {
       const fac = new FastAverageColor();
       try {
-        const color = fac.getColor(imgRef.current);
-        setBgColor(color.hex);
+        const img = imgRef.current as HTMLImageElement;
+        const width = img.naturalWidth;
+        const height = img.naturalHeight;
+
+        const color1 = fac.getColor(img, { left: 0, top: 0, width: width / 2, height: height / 2 });
+        const color2 = fac.getColor(img, { left: width / 2, top: 0, width: width / 2, height: height / 2 });
+        const color3 = fac.getColor(img, { left: width / 2, top: height / 2, width: width / 2, height: height / 2 });
+        const color4 = fac.getColor(img, { left: 0, top: height / 2, width: width / 2, height: height / 2 });
+        const color5 = fac.getColor(img, { left: width / 2, top: height / 2, width: width / 2, height: height / 2 });
+
+        setBgColor(toPastel(color1.value[0], color1.value[1], color1.value[2]));
+        setBgColor2(toPastel(color2.value[0], color2.value[1], color2.value[2]));
+        setBgColor3(toPastel(color3.value[0], color3.value[1], color3.value[2]));
+        setBgColor4(toPastel(color4.value[0], color4.value[1], color4.value[2]));
+        setBgColor5(toPastel(color5.value[0], color5.value[1], color5.value[2]));
       } catch (e) {
         console.error("FastAverageColor error:", e);
       }
@@ -88,8 +114,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen font-sans">
+      {/* Animated background blobs */}
+      <div className="fixed inset-0 -z-10 bg-[#f0eeec] overflow-hidden">
+        <div className="home-bg-blob home-bg-blob-1" style={{ backgroundColor: bgColor }} />
+        <div className="home-bg-blob home-bg-blob-2" style={{ backgroundColor: bgColor2 }} />
+        <div className="home-bg-blob home-bg-blob-3" style={{ backgroundColor: bgColor3 }} />
+        <div className="home-bg-blob home-bg-blob-4" style={{ backgroundColor: bgColor4 }} />
+        <div className="home-bg-blob home-bg-blob-5" style={{ backgroundColor: bgColor5 }} />
+      </div>
       <Navbar />
-      <div className="w-100 h-100 flex blur-3xl rounded-full absolute top-0 left-0" style={{ backgroundColor: bgColor, opacity: 0.3 }}></div>
 
       {/* Modal de Confirmação */}
       {confirmDeleteId && (
@@ -129,7 +162,7 @@ export default function Home() {
               <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4">
                 Olá, {localStorage.getItem("name")}.
               </h1>
-              <p className="text-gray-400 font-secondary text-lg">
+              <p className="text-gray-900 font-secondary text-lg">
                 O que vamos criar hoje?
               </p>
             </header>
@@ -137,7 +170,7 @@ export default function Home() {
             {/* Action Cards */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Post Performático", {}, "spotify")}>
+              <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Post Performático", {}, "spotify")}>
                 <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
                   Post Performático
@@ -148,7 +181,7 @@ export default function Home() {
               </div>
 
               {/* Card 2 */}
-              <div className="group cursor-pointer block p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all hover:shadow-sm" onClick={() => createProject("Conversa", {}, "whatsapp")}>
+              <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Conversa", {}, "whatsapp")}>
                 <MessageCircle className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
                   Conversa
@@ -176,13 +209,13 @@ export default function Home() {
                   projects.map((project: any) => (
                     <div
                       key={project.id}
-                      className="flex items-center group rounded-xl hover:bg-gray-50 transition-colors px-2 py-3"
+                      className="flex items-center group rounded-xl hover:bg-white/20 backdrop-blur-sm transition-all px-2 py-3"
                     >
                       <div
                         className="flex items-center flex-1 cursor-pointer"
                         onClick={() => navigate(`/editor/${project.id}`)}
                       >
-                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 mr-5 group-hover:bg-white transition-colors border border-gray-100 shrink-0">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-gray-700 mr-5 group-hover:bg-white/40 transition-all border border-white/30 backdrop-blur-sm shrink-0">
                           {project.mode === 'spotify' ? <Music className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'whatsapp' ? <MessageCircle className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'letterboxd' ? <Clapperboard className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'instagram' ? <Instagram className="w-5 h-5 stroke-[1.5]" /> : <Clapperboard className="w-5 h-5 stroke-[1.5]" />}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -198,7 +231,7 @@ export default function Home() {
                       {/* Botão de deletar */}
                       <button
                         onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
-                        className="ml-4 p-2 text-gray-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                        className="ml-4 p-2 text-gray-400 hover:text-red-400 hover:bg-red-50/60 backdrop-blur-sm rounded-lg transition-all shrink-0"
                         title="Deletar projeto"
                       >
                         <Trash2 className="w-4 h-4" />

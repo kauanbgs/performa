@@ -1,0 +1,69 @@
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(60px, -40px) scale(1.1); }
+  50% { transform: translate(-40px, 50px) scale(0.9); }
+  75% { transform: translate(50px, 20px) scale(1.05); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30% { transform: translate(-70px, 40px) scale(1.08); }
+  60% { transform: translate(50px, -60px) scale(0.92); }
+  80% { transform: translate(-30px, -20px) scale(1.03); }
+}
+
+@keyframes blob-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  20% { transform: translate(40px, 60px) scale(1.06); }
+  50% { transform: translate(-60px, -30px) scale(0.95); }
+  80% { transform: translate(30px, -50px) scale(1.02); }
+}
+
+.home-bg-blob {
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(200px);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: background-color 1.5s ease-out;
+}
+
+.home-bg-blob-1 {
+  width: 70vw;
+  height: 70vh;
+  top: -20%;
+  left: -15%;
+  animation: blob-drift-1 24s ease-in-out infinite;
+}
+
+.home-bg-blob-2 {
+  width: 65vw;
+  height: 65vh;
+  top: -15%;
+  right: -20%;
+  animation: blob-drift-2 30s ease-in-out infinite;
+}
+
+.home-bg-blob-3 {
+  width: 60vw;
+  height: 60vh;
+  bottom: -15%;
+  left: 10%;
+  animation: blob-drift-3 26s ease-in-out infinite;
+}
+
+.home-bg-blob-4 {
+  width: 55vw;
+  height: 55vh;
+  bottom: 5%;
+  right: -10%;
+  animation: blob-drift-1 32s ease-in-out infinite reverse;
+}
+
+.home-bg-blob-5 {
+  width: 50vw;
+  height: 50vh;
+  top: 30%;
+  left: 30%;
+  animation: blob-drift-2 22s ease-in-out infinite reverse;
+}
