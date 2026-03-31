@@ -16,6 +16,7 @@ import {
   Instagram,
   MessageCircle,
   Trash2,
+  Twitter,
 } from "lucide-react";
 import "../../index.css";
 import { useState, useRef, useEffect } from "react";
@@ -24,6 +25,7 @@ import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import api from "../../services/axios";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 import InstagramCanvas from "../../components/canvas/instagramCanvas";
+import TwitterCanvas from "../../components/canvas/twitterCanvas";
 
 export default function Editor() {
   const navigate = useNavigate();
@@ -488,6 +490,36 @@ export default function Editor() {
                   Fake Instagram
                 </span>
               </button>
+              <button
+                onClick={() => {
+                  setActiveMode("twitter");
+                  setWidth(500);
+                  setHeight(700);
+                  content.bgColor = "#15202B";
+                  content.bgImage = "";
+                  content.itemTitle = "Kauan Plaza";
+                  content.artist = "kauanplaza";
+                  content.lyrics = "Este é o meu primeiro tweet!";
+                  content.followers = "10.5K";
+                  content.posts = "1.2K";
+                  content.verified = true;
+                  content.glassmorphism = false;
+                  content.date = "29 Mar 26";
+                  content.time = "10:42 AM";
+                  content.views = "150K";
+                  content.replies = "234";
+                }}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "twitter" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
+                  <Twitter className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Fake Twitter
+                </span>
+              </button>
             </div>
           )}
           {activeTool === "text" && activeMode === "spotify" && (
@@ -739,6 +771,129 @@ export default function Editor() {
                     – Remover última
                   </button>
                 )}
+              </div>
+            </div>
+          )}
+
+          {activeTool === "text" && activeMode === "twitter" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Nome (Display Name)
+                </label>
+                <input
+                  type="text"
+                  value={content.itemTitle}
+                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Nome de Exibição"
+                />
+              </div>
+              <div className="flex flex-col gap-2 items-start">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Verificado?
+                </label>
+                <input
+                  type="checkbox"
+                  checked={content.verified || false}
+                  onChange={(e) => setContent((prev: any) => ({ ...prev, verified: e.target.checked }))}
+                  className="h-6 w-6 rounded-lg cursor-pointer bg-transparent"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Usuário (@)
+                </label>
+                <input
+                  type="text"
+                  value={content.artist}
+                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Seu @usuario"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Texto do Tweet
+                </label>
+                <textarea
+                  value={content.lyrics}
+                  onChange={(e) => handleInputChange("lyrics", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[100px] resize-y"
+                  placeholder="O que está acontecendo?"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Retweets / Reposts
+                </label>
+                <input
+                  type="text"
+                  value={content.posts}
+                  onChange={(e) => handleInputChange("posts", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 1.2K"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Curtidas
+                </label>
+                <input
+                  type="text"
+                  value={content.followers}
+                  onChange={(e) => handleInputChange("followers", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 10.5K"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Comentários (Replies)
+                </label>
+                <input
+                  type="text"
+                  value={content.replies}
+                  onChange={(e) => handleInputChange("replies", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 234"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Visualizações (Views)
+                </label>
+                <input
+                  type="text"
+                  value={content.views}
+                  onChange={(e) => handleInputChange("views", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 1.2M"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Hora
+                </label>
+                <input
+                  type="text"
+                  value={content.time}
+                  onChange={(e) => handleInputChange("time", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 10:42 AM"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Data
+                </label>
+                <input
+                  type="text"
+                  value={content.date}
+                  onChange={(e) => handleInputChange("date", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Ex: 29 Mar 26"
+                />
               </div>
             </div>
           )}
@@ -1119,6 +1274,93 @@ export default function Editor() {
           )}
 
 
+          {activeTool === "uploads" && activeMode === "twitter" && (
+            <div className="flex flex-col gap-6">
+              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Foto de Perfil
+              </h1>
+              <div className="grid grid-cols-2 gap-2">
+                {content.profileImages?.map((img: any, index: any) => (
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "profile")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Background
+                </h1>
+                <button
+                  onClick={() =>
+                    setContent((prev: any) => ({
+                      ...prev,
+                      bgColor: "#15202B",
+                      bgImage: "",
+                    }))
+                  }
+                  className="ml-auto px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-all"
+                >
+                  Padrão
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {content.bgImages?.map((img: any, index: any) => (
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
+                    <img
+                      src={img}
+                      alt={`Upload ${index}`}
+                      onClick={() => setContent((prev: any) => ({ ...prev, bgImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("bg", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "bg")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+
           {activeTool === "uploads" && activeMode === "letterboxd" && (
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-2">
@@ -1385,6 +1627,9 @@ export default function Editor() {
             )}
             {activeMode === "instagram" && (
               <InstagramCanvas content={content} handleBlur={handleBlur} />
+            )}
+            {activeMode === "twitter" && (
+              <TwitterCanvas content={content} handleBlur={handleBlur} />
             )}
 
           </div>
