@@ -48,8 +48,7 @@ export default function Home() {
     fetchData();
   }, [token]);
 
-  // Lightens an RGB color into a soft pastel
-  const toPastel = (r: number, g: number, b: number, mix = 0.08): string => {
+  const toPastel = (r: number, g: number, b: number, mix = 0.35): string => {
     const pr = Math.round(r + (255 - r) * mix);
     const pg = Math.round(g + (255 - g) * mix);
     const pb = Math.round(b + (255 - b) * mix);
@@ -170,7 +169,7 @@ export default function Home() {
             {/* Action Cards */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
-              <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Post Performático", {}, "spotify")}>
+              <div className="group cursor-pointer block p-6 border border-white/20 rounded-3xl bg-white/5 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:bg-white/10 hover:border-white/30 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] transition-all duration-300" onClick={() => createProject("Post Performático", {}, "spotify")}>
                 <Music className="w-8 h-8 text-black mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Post Performático
@@ -181,7 +180,7 @@ export default function Home() {
               </div>
 
               {/* Card 2 */}
-              <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Conversa", {}, "whatsapp")}>
+              <div className="group cursor-pointer block p-6 border border-white/20 rounded-3xl bg-white/5 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:bg-white/10 hover:border-white/30 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] transition-all duration-300" onClick={() => createProject("Conversa", {}, "whatsapp")}>
                 <MessageCircle className="w-8 h-8 text-black mb-4 stroke-[1.5]" />
                 <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Conversa
@@ -209,13 +208,13 @@ export default function Home() {
                   projects.map((project: any) => (
                     <div
                       key={project.id}
-                      className="flex items-center group rounded-xl hover:bg-white/20 backdrop-blur-sm transition-all px-2 py-3"
+                      className="flex items-center group rounded-2xl hover:bg-white/5 hover:backdrop-blur-3xl hover:shadow-sm border border-transparent hover:border-white/20 transition-all duration-300 px-4 py-3"
                     >
                       <div
                         className="flex items-center flex-1 cursor-pointer"
                         onClick={() => navigate(`/editor/${project.id}`)}
                       >
-                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-black mr-5 group-hover:bg-white/40 transition-all border border-white/30 backdrop-blur-sm shrink-0">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-black mr-5 group-hover:bg-white/20 transition-all border border-white/20 backdrop-blur-3xl shadow-sm shrink-0">
                           {project.mode === 'spotify' ? <Music className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'whatsapp' ? <MessageCircle className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'letterboxd' ? <Clapperboard className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'instagram' ? <Instagram className="w-5 h-5 stroke-[1.5]" /> : <Clapperboard className="w-5 h-5 stroke-[1.5]" />}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -246,13 +245,13 @@ export default function Home() {
           {/* Lado Direito: Preview do Último Projeto */}
           <div className="lg:col-span-4 self-stretch">
             {loading ? (
-              <div className="h-full min-h-[400px] flex items-center justify-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+              <div className="h-full min-h-[400px] flex items-center justify-center bg-white/5 backdrop-blur-3xl rounded-3xl border border-dashed border-white/20 shadow-sm">
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
               </div>
             ) : projects.length > 0 ? (
               <div className="group relative h-full flex flex-col rounded-3xl overflow-hidden transition-all duration-500">
                 <div
-                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border border-gray-600 rounded-3xl"
+                  className="relative flex-1 bg-white/5 backdrop-blur-3xl overflow-hidden cursor-pointer border border-white/20 shadow-sm rounded-3xl"
                   onClick={() => navigate(`/editor/${projects[0].id}`)}
                 >
                   {projects[0].previewImage && projects[0].previewImage !== "/transparente.jpg" ? (
@@ -265,7 +264,7 @@ export default function Home() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-linear-to-br from-gray-50 to-gray-100">
+                    <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-white/5 backdrop-blur-3xl">
                       <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 transition-transform duration-500">
                         {projects[0].mode === "spotify" ? (
                           <Music className="w-10 h-10 text-gray-700" />
@@ -304,7 +303,7 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-              <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 text-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+              <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 text-center bg-white/5 backdrop-blur-3xl rounded-3xl border border-dashed border-white/20 shadow-sm">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">
                   <Clapperboard className="w-8 h-8 text-gray-300" />
                 </div>
