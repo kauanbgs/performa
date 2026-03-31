@@ -22,8 +22,8 @@
 .home-bg-blob {
   position: fixed;
   border-radius: 9999px;
-  filter: blur(200px);
-  opacity: 0.85;
+  filter: blur(160px);
+  opacity: 1;
   pointer-events: none;
   transition: background-color 1.5s ease-out;
 }

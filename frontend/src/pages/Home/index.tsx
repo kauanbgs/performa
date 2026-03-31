@@ -49,7 +49,7 @@ export default function Home() {
   }, [token]);
 
   // Lightens an RGB color into a soft pastel
-  const toPastel = (r: number, g: number, b: number, mix = 0.25): string => {
+  const toPastel = (r: number, g: number, b: number, mix = 0.08): string => {
     const pr = Math.round(r + (255 - r) * mix);
     const pg = Math.round(g + (255 - g) * mix);
     const pb = Math.round(b + (255 - b) * mix);
@@ -115,7 +115,7 @@ export default function Home() {
   return (
     <div className="min-h-screen font-sans">
       {/* Animated background blobs */}
-      <div className="fixed inset-0 -z-10 bg-[#f0eeec] overflow-hidden">
+      <div className="fixed inset-0 -z-10 bg-[#dbd8d5] overflow-hidden">
         <div className="home-bg-blob home-bg-blob-1" style={{ backgroundColor: bgColor }} />
         <div className="home-bg-blob home-bg-blob-2" style={{ backgroundColor: bgColor2 }} />
         <div className="home-bg-blob home-bg-blob-3" style={{ backgroundColor: bgColor3 }} />
@@ -171,22 +171,22 @@ export default function Home() {
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
               <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Post Performático", {}, "spotify")}>
-                <Music className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
-                <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
+                <Music className="w-8 h-8 text-black mb-4 stroke-[1.5]" />
+                <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Post Performático
                 </h3>
-                <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
+                <p className="text-black/60 font-secondary text-sm leading-relaxed max-w-xs">
                   Crie o que quiser, afinal de contas, a internet é um lugar falso.
                 </p>
               </div>
 
               {/* Card 2 */}
               <div className="group cursor-pointer block p-6 border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/25 hover:border-white/40 hover:shadow-lg transition-all" onClick={() => createProject("Conversa", {}, "whatsapp")}>
-                <MessageCircle className="w-8 h-8 text-gray-700 mb-4 stroke-[1.5]" />
-                <h3 className="text-2xl font-primary text-gray-900 mb-2 font-medium">
+                <MessageCircle className="w-8 h-8 text-black mb-4 stroke-[1.5]" />
+                <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Conversa
                 </h3>
-                <p className="text-gray-500 font-secondary text-sm leading-relaxed max-w-xs">
+                <p className="text-black/60 font-secondary text-sm leading-relaxed max-w-xs">
                   Crie conversas com pessoas famosas, ou com aquele amigo que você tanto ama.
                 </p>
               </div>
@@ -195,7 +195,7 @@ export default function Home() {
             {/* Projetos Recentes (Moved inside lg:col-span-8) */}
             <div className="mt-16">
               <div className="flex justify-between items-end mb-10">
-                <h2 className="text-3xl font-primary text-gray-900">
+                <h2 className="text-3xl font-primary text-black">
                   Projetos Recentes
                 </h2>
               </div>
@@ -215,14 +215,14 @@ export default function Home() {
                         className="flex items-center flex-1 cursor-pointer"
                         onClick={() => navigate(`/editor/${project.id}`)}
                       >
-                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-gray-700 mr-5 group-hover:bg-white/40 transition-all border border-white/30 backdrop-blur-sm shrink-0">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-black mr-5 group-hover:bg-white/40 transition-all border border-white/30 backdrop-blur-sm shrink-0">
                           {project.mode === 'spotify' ? <Music className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'whatsapp' ? <MessageCircle className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'letterboxd' ? <Clapperboard className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'instagram' ? <Instagram className="w-5 h-5 stroke-[1.5]" /> : <Clapperboard className="w-5 h-5 stroke-[1.5]" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-primary text-xl text-gray-900 mb-1 truncate">
+                          <h4 className="font-primary text-xl text-black mb-1 truncate">
                             {project.title}
                           </h4>
-                          <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+                          <p className="text-[10px] text-black/50 uppercase tracking-widest font-medium">
                             {project.mode === 'spotify' ? 'Post Musical' : project.mode === 'whatsapp' ? 'Conversa' : project.mode === 'letterboxd' ? 'Filmes' : project.mode === 'instagram' ? 'Instagram' : 'Projeto'} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -231,7 +231,7 @@ export default function Home() {
                       {/* Botão de deletar */}
                       <button
                         onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
-                        className="ml-4 p-2 text-gray-400 hover:text-red-400 hover:bg-red-50/60 backdrop-blur-sm rounded-lg transition-all shrink-0"
+                        className="ml-4 p-2 text-black/40 hover:text-red-500 hover:bg-red-50/60 backdrop-blur-sm rounded-lg transition-all shrink-0"
                         title="Deletar projeto"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function Home() {
             ) : projects.length > 0 ? (
               <div className="group relative h-full flex flex-col rounded-3xl overflow-hidden transition-all duration-500">
                 <div
-                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border-2 border-gray-200 rounded-3xl"
+                  className="relative flex-1 bg-gray-50 overflow-hidden cursor-pointer border border-gray-600 rounded-3xl"
                   onClick={() => navigate(`/editor/${projects[0].id}`)}
                 >
                   {projects[0].previewImage && projects[0].previewImage !== "/transparente.jpg" ? (
@@ -277,7 +277,7 @@ export default function Home() {
                           <Clapperboard className="w-10 h-10 text-gray-700" />
                         )}
                       </div>
-                      <p className="text-gray-400 font-secondary text-sm">Sem preview disponível</p>
+                      <p className="text-black/50 font-secondary text-sm">Sem preview disponível</p>
                     </div>
                   )}
                 </div>
@@ -285,11 +285,11 @@ export default function Home() {
                 <div className="p-8">
                   <div className="mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                      <span className="text-[10px] text-black/50 uppercase tracking-widest font-bold">
                         {projects[0].mode === 'spotify' ? 'Post Musical' : projects[0].mode === 'whatsapp' ? 'Conversa' : projects[0].mode === 'letterboxd' ? 'Filmes' : projects[0].mode === 'instagram' ? 'Instagram' : 'Projeto'}
                       </span>
                     </div>
-                    <h3 className="text-2xl font-primary text-gray-900 line-clamp-1">
+                    <h3 className="text-2xl font-primary text-black line-clamp-1">
                       {projects[0].title}
                     </h3>
                   </div>
@@ -309,7 +309,7 @@ export default function Home() {
                   <Clapperboard className="w-8 h-8 text-gray-300" />
                 </div>
                 <h3 className="text-gray-900 font-primary text-xl mb-2">Configure seu primeiro post</h3>
-                <p className="text-gray-500 font-secondary text-sm leading-relaxed">
+                <p className="text-black/60 font-secondary text-sm leading-relaxed">
                   Crie um post musical ou cinéfilo para ver o preview aqui.
                 </p>
               </div>
