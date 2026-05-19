@@ -42,7 +42,7 @@ export default function Editor() {
     setLoading(true);
 
     try {
-      await api.updateProject(token, id, { ...content, mode: activeMode });
+      await api.updateProject(token, id, { ...content, mode: activeMode});
     } catch (err) {
       console.error(err);
     }

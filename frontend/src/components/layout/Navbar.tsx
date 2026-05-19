@@ -24,12 +24,6 @@ export const Navbar = () => {
         <Link to="/" className="hover:text-black transition-colors text-gray-900">
           Home
         </Link>
-        <Link to="/planos" className="hover:text-black transition-colors text-gray-900">
-          Planos
-        </Link>
-        <Link to="/" className="hover:text-black transition-colors text-gray-900">
-          Criar
-        </Link>
         <Link to="/ideias" className="hover:text-black transition-colors text-gray-900">
           Ideias
         </Link>
@@ -57,7 +51,7 @@ export const Navbar = () => {
         <div className={token ? "flex items-center gap-6" : "hidden"}>
           <button
             onClick={handleLogout}
-            className="hover:text-black text-gray-900 transition-colors text-sm font-medium font-secondary"
+            className="hover:text-black cursor-pointer text-gray-900 transition-colors text-sm font-medium font-secondary"
           >
             Logout
           </button>

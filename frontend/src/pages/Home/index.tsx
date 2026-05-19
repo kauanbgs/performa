@@ -22,11 +22,11 @@ export default function Home() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [bgColor, setBgColor] = useState<string>("#ffffff");
-  const [bgColor2, setBgColor2] = useState<string>("#ffffff");
-  const [bgColor3, setBgColor3] = useState<string>("#ffffff");
-  const [bgColor4, setBgColor4] = useState<string>("#ffffff");
-  const [bgColor5, setBgColor5] = useState<string>("#ffffff");
+  const [bgColor, setBgColor] = useState<string>("#6291dcff");
+  const [bgColor2, setBgColor2] = useState<string>("#aed38dff");
+  const [bgColor3, setBgColor3] = useState<string>("#1bb2e9ff");
+  const [bgColor4, setBgColor4] = useState<string>("#1abd9aff");
+  const [bgColor5, setBgColor5] = useState<string>("#aed7e7ff");
   const imgRef = useRef(null);
 
 
@@ -77,6 +77,8 @@ export default function Home() {
       } catch (e) {
         console.error("FastAverageColor error:", e);
       }
+    } else {
+      console.log("Image not loaded");
     }
   };
 
@@ -158,7 +160,7 @@ export default function Home() {
           {/* Lado Esquerdo: Header e Cards */}
           <div className="lg:col-span-8 flex flex-col">
             <header className="mb-16">
-              <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4">
+              <h1 className="text-6xl md:text-7xl font-primary text-gray-900 mb-4 italic">
                 Olá, {localStorage.getItem("name")}.
               </h1>
               <p className="text-gray-900 font-secondary text-lg">
@@ -264,8 +266,8 @@ export default function Home() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-white/5 backdrop-blur-3xl">
-                      <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 transition-transform duration-500">
+                    <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-white/5 backdrop-blur-3xl hover:bg-white/10 transition-all duration-200">
+                      <div className="w-20 h-20 rounded-2xl shadow-2xl flex items-center justify-center mb-6 transition-transform duration-500">
                         {projects[0].mode === "spotify" ? (
                           <Music className="w-10 h-10 text-gray-700" />
                         ) : projects[0].mode === "whatsapp" ? (
@@ -295,10 +297,10 @@ export default function Home() {
 
                   <button
                     onClick={() => navigate(`/editor/${projects[0].id}`)}
-                    className="w-full flex items-center justify-between px-6 py-4 bg-gray-900 text-white rounded-2xl font-secondary font-medium transition-all"
+                    className="w-full flex items-center justify-between px-6 py-4 shadow-lg text-white rounded-2xl font-secondary font-medium transition-all bg-white/10 backdrop-blur-3xl hover:bg-white/20"
                   >
-                    <span>Continuar editando</span>
-                    <ArrowRight className="w-5 h-5 transition-transform" />
+                    <span className="text-black">Continuar editando</span>
+                    <ArrowRight className="w-5 h-5 transition-transform text-black" />
                   </button>
                 </div>
               </div>
