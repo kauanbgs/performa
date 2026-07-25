@@ -1,6 +1,6 @@
-# Perfoma
+# Performa
 
-Bem-vindo ao Perfoma! Uma plataforma para criação de imagens fictícias inspiradas em plataformas populares da internet. O sistema permite gerar mockups personalizados de conversas, estatísticas, perfis e métricas para fins criativos, demonstrações, apresentações e entretenimento.
+Bem-vindo ao Performa! Uma plataforma para criação de imagens fictícias inspiradas em plataformas populares da internet. O sistema permite gerar mockups personalizados de conversas, estatísticas, perfis e métricas para fins criativos, demonstrações, apresentações e entretenimento.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -26,8 +26,8 @@ Antes de começar, você precisará ter instalado:
 ### Clone o repositório
 
 ```bash
-git clone https://github.com/kauanbgs/perfoma.git
-cd perfoma
+git clone https://github.com/kauanbgs/performa.git
+cd performa
 ```
 
 ### Instale as dependências
@@ -41,7 +41,7 @@ npm install
 Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/perfoma"
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/performa"
 ```
 
 ### Execute as migrações
@@ -108,7 +108,7 @@ prisma/
 
 ## ⚠️ Aviso
 
-O Perfoma gera conteúdos fictícios e simulados. Todo material produzido pela plataforma deve ser utilizado de forma responsável, respeitando leis, direitos de terceiros e políticas das plataformas envolvidas.
+O Performa gera conteúdos fictícios e simulados. Todo material produzido pela plataforma deve ser utilizado de forma responsável, respeitando leis, direitos de terceiros e políticas das plataformas envolvidas.
 
 ## 👨‍💻 Desenvolvido por
 

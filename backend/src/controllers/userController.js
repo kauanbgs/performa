@@ -48,7 +48,11 @@ module.exports = class userController {
       if (!isPasswordValid) {
         return res.status(401).json({ error: "Email ou senha incorretos" });
       }
-      const token = jwt.sign({id: user.id}, process.env.JWT_SECRET || "", {expiresIn: "1d"});
+      if (!process.env.JWT_SECRET) {
+        console.error("JWT_SECRET não configurado");
+        return res.status(500).json({ error: "Erro interno ao fazer login." });
+      }
+      const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: "1d"});
       delete user.password;
       res.status(200).json({ message: "Login realizado com sucesso!", user, token });
     } catch (err) {

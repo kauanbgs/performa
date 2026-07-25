@@ -85,6 +85,8 @@ module.exports = class projectController {
       });
       if (!project)
         return res.status(404).json({ error: "Projeto não encontrado" });
+      if (project.userId !== req.userId)
+        return res.status(403).json({ error: "Não autorizado" });
       return res.status(200).json(project);
     } catch (err) {
       console.error(err);
@@ -104,15 +106,15 @@ module.exports = class projectController {
       });
     }
 
-    const existing = await prisma.project.findUnique({
-      where: { id: req.params.id },
-    });
-
-    if (!existing || existing.userId !== userId) {
-      return res.status(403).json({ error: "Não autorizado" });
-    }
-
     try {
+      const existing = await prisma.project.findUnique({
+        where: { id: req.params.id },
+      });
+
+      if (!existing || existing.userId !== userId) {
+        return res.status(403).json({ error: "Não autorizado" });
+      }
+
       const project = await prisma.project.update({
         where: {
           id: req.params.id,
@@ -178,8 +180,13 @@ module.exports = class projectController {
       window.INJECTED_EXPORT_DATA = data;
     }, req.body);
 
-    const frontendUrl =
-      req.headers.origin || "https://performa-one.vercel.app";
+    const allowedFrontendUrls = [
+      "https://performa-one.vercel.app",
+      "http://localhost:5173",
+    ];
+    const frontendUrl = allowedFrontendUrls.includes(req.headers.origin)
+      ? req.headers.origin
+      : allowedFrontendUrls[0];
 
     const url = `${frontendUrl}/export-template`;
 
