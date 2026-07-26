@@ -1,5 +1,7 @@
 import { Navbar } from "../../components/layout/Navbar";
-import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle, Film, Instagram } from "lucide-react";
+import { Music, Clapperboard, Trash2, Loader2, ArrowRight, MessageCircle } from "lucide-react";
+import { modeShortLabel } from "../../constants/modes";
+import { modeIcon } from "../../constants/modeIcons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -128,7 +130,7 @@ export default function Home() {
               <Trash2 className="w-6 h-6 text-red-500" />
             </div>
             <h3 className="text-xl font-primary text-gray-900 mb-2">Deletar projeto?</h3>
-            <p className="text-gray-500 font-secondary text-sm mb-6 leading-relaxed">
+            <p className="text-ink-soft font-secondary text-sm mb-6 leading-relaxed">
               Essa ação é irreversível. O projeto será permanentemente deletado.
             </p>
             <div className="flex gap-3">
@@ -171,7 +173,7 @@ export default function Home() {
                 <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Post Performático
                 </h3>
-                <p className="text-black/60 font-secondary text-sm leading-relaxed max-w-xs">
+                <p className="text-ink-soft font-secondary text-sm leading-relaxed max-w-xs">
                   Crie o que quiser, afinal de contas, a internet é um lugar falso.
                 </p>
               </div>
@@ -182,7 +184,7 @@ export default function Home() {
                 <h3 className="text-2xl font-primary text-black mb-2 font-medium">
                   Conversa
                 </h3>
-                <p className="text-black/60 font-secondary text-sm leading-relaxed max-w-xs">
+                <p className="text-ink-soft font-secondary text-sm leading-relaxed max-w-xs">
                   Crie conversas com pessoas famosas, ou com aquele amigo que você tanto ama.
                 </p>
               </div>
@@ -212,14 +214,17 @@ export default function Home() {
                         onClick={() => navigate(`/editor/${project.id}`)}
                       >
                         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 text-black mr-5 group-hover:bg-white/20 transition-all border border-white/20 backdrop-blur-3xl shadow-sm shrink-0">
-                          {project.mode === 'spotify' ? <Music className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'whatsapp' ? <MessageCircle className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'letterboxd' ? <Clapperboard className="w-5 h-5 stroke-[1.5]" /> : project.mode === 'instagram' ? <Instagram className="w-5 h-5 stroke-[1.5]" /> : <Clapperboard className="w-5 h-5 stroke-[1.5]" />}
+                          {(() => {
+                            const Icon = modeIcon(project.mode);
+                            return <Icon className="w-5 h-5 stroke-[1.5]" />;
+                          })()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-primary text-xl text-black mb-1 truncate">
                             {project.title}
                           </h4>
-                          <p className="text-[10px] text-black/50 uppercase tracking-widest font-medium">
-                            {project.mode === 'spotify' ? 'Post Musical' : project.mode === 'whatsapp' ? 'Conversa' : project.mode === 'letterboxd' ? 'Filmes' : project.mode === 'instagram' ? 'Instagram' : 'Projeto'} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          <p className="text-[10px] text-ink-soft uppercase tracking-widest font-medium">
+                            {modeShortLabel(project.mode)} - {new Date(project.updatedAt).toLocaleDateString('pt-BR')} às {new Date(project.updatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
                       </div>
@@ -227,7 +232,7 @@ export default function Home() {
                       {/* Botão de deletar */}
                       <button
                         onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(project.id); }}
-                        className="ml-4 p-2 text-black/40 hover:text-red-500 hover:bg-red-50/60 backdrop-blur-sm rounded-lg transition-all shrink-0"
+                        className="ml-4 p-2 text-ink-soft hover:text-red-600 hover:bg-red-50/60 backdrop-blur-sm rounded-lg transition-all shrink-0"
                         title="Deletar projeto"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -263,17 +268,12 @@ export default function Home() {
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center p-12 text-center bg-white/5 backdrop-blur-3xl hover:bg-white/10 transition-all duration-200">
                       <div className="w-20 h-20 rounded-2xl shadow-2xl flex items-center justify-center mb-6 transition-transform duration-500">
-                        {projects[0].mode === "spotify" ? (
-                          <Music className="w-10 h-10 text-gray-700" />
-                        ) : projects[0].mode === "whatsapp" ? (
-                          <MessageCircle className="w-10 h-10 text-gray-700" />
-                        ) : projects[0].mode === "letterboxd" ? (
-                          <Film className="w-10 h-10 text-gray-700" />
-                        ) : (
-                          <Clapperboard className="w-10 h-10 text-gray-700" />
-                        )}
+                        {(() => {
+                          const Icon = modeIcon(projects[0].mode);
+                          return <Icon className="w-10 h-10 text-gray-700" />;
+                        })()}
                       </div>
-                      <p className="text-black/50 font-secondary text-sm">Sem preview disponível</p>
+                      <p className="text-ink-soft font-secondary text-sm">Sem preview disponível</p>
                     </div>
                   )}
                 </div>
@@ -281,8 +281,8 @@ export default function Home() {
                 <div className="p-8">
                   <div className="mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] text-black/50 uppercase tracking-widest font-bold">
-                        {projects[0].mode === 'spotify' ? 'Post Musical' : projects[0].mode === 'whatsapp' ? 'Conversa' : projects[0].mode === 'letterboxd' ? 'Filmes' : projects[0].mode === 'instagram' ? 'Instagram' : 'Projeto'}
+                      <span className="text-[10px] text-ink-soft uppercase tracking-widest font-bold">
+                        {modeShortLabel(projects[0].mode)}
                       </span>
                     </div>
                     <h3 className="text-2xl font-primary text-black line-clamp-1">
@@ -305,7 +305,7 @@ export default function Home() {
                   <Clapperboard className="w-8 h-8 text-gray-300" />
                 </div>
                 <h3 className="text-gray-900 font-primary text-xl mb-2">Configure seu primeiro post</h3>
-                <p className="text-black/60 font-secondary text-sm leading-relaxed">
+                <p className="text-ink-soft font-secondary text-sm leading-relaxed">
                   Crie um post musical ou cinéfilo para ver o preview aqui.
                 </p>
               </div>

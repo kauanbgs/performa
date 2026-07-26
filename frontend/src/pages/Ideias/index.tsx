@@ -9,6 +9,8 @@ import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 import InstagramCanvas from "../../components/canvas/instagramCanvas";
 import SpotifyWrappedCanvas from "../../components/canvas/spotifyWrappedCanvas";
+import NotesCanvas from "../../components/canvas/notesCanvas";
+import TweetCanvas from "../../components/canvas/tweetCanvas";
 import { type Mode, CANVAS_DIMENSIONS, MODE_LABELS, MODE_STYLES } from "../../constants/modes";
 
 interface Idea {
@@ -19,6 +21,36 @@ interface Idea {
 }
 
 const IDEAS: Idea[] = [
+  {
+    title: "Nota de Esclarecimento",
+    description: "O comunicado no app Notas, postado às 3 da manhã. Clássico.",
+    mode: "notes",
+    content: {
+      title: "Nota de Esclarecimento",
+      itemTitle: "Comunicado",
+      artist: "12 de março de 2026 às 03:14",
+      lyrics:
+        "Venho por meio desta esclarecer o ocorrido.\n\nNão foi minha intenção que as coisas tomassem essa proporção, e assumo total responsabilidade pelo que aconteceu.\n\nSeguirei refletindo com calma e carinho.",
+      glassmorphism: true,
+    },
+  },
+  {
+    title: "Tweet das 3 da Manhã",
+    description: "Print de tweet no modo escuro, com selo azul e contadores.",
+    mode: "tweet",
+    content: {
+      title: "Tweet das 3 da Manhã",
+      itemTitle: "Kauan Plaza",
+      artist: "@kauanbgs",
+      lyrics: "eu não deveria estar postando isso às 3 da manhã mas enfim",
+      profileImage: "/euu.png",
+      glassmorphism: true,
+      rating: 5,
+      followers: 2400,
+      likes: 18300,
+      posts: 128,
+    },
+  },
   {
     title: "Último Romance",
     description: "Card de música com letra em destaque sobre glassmorphism.",
@@ -195,8 +227,10 @@ function TemplatePreview({ mode, content }: { mode: Mode; content: any }) {
 
   return (
     <div className="w-60 h-80 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-100">
+      {/* flex-center porque nem todo canvas ocupa a altura declarada — o
+          tweet tem altura automática e ficaria colado no topo da caixa. */}
       <div
-        className="shrink-0 origin-center"
+        className="shrink-0 origin-center flex items-center justify-center"
         style={{ width: cw, height: ch, transform: `scale(${scale})` }}
       >
         {mode === "spotify" && (
@@ -214,6 +248,8 @@ function TemplatePreview({ mode, content }: { mode: Mode; content: any }) {
         {mode === "spotifyWrapped" && (
           <SpotifyWrappedCanvas content={content} handleBlur={() => {}} />
         )}
+        {mode === "notes" && <NotesCanvas content={content} handleBlur={() => {}} />}
+        {mode === "tweet" && <TweetCanvas content={content} handleBlur={() => {}} />}
       </div>
     </div>
   );

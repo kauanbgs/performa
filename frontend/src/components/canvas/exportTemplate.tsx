@@ -4,6 +4,8 @@ import LetterboxdCanvas from "./letterboxdCanvas";
 import WhatsappCanvas from "./whatsappCanvas";
 import InstagramCanvas from "./instagramCanvas";
 import SpotifyWrappedCanvas from "./spotifyWrappedCanvas";
+import NotesCanvas from "./notesCanvas";
+import TweetCanvas from "./tweetCanvas";
 
 interface ExportData {
   template: string;
@@ -44,6 +46,12 @@ export default function ExportTemplate() {
       )}
       {data.template === "spotifyWrapped" && (
         <SpotifyWrappedCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      )}
+      {data.template === "notes" && (
+        <NotesCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
+      )}
+      {data.template === "tweet" && (
+        <TweetCanvas ref={canvasRef} content={data} handleBlur={() => {}} />
       )}
     </div>
   );

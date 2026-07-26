@@ -11,7 +11,10 @@ export const Navbar = () => {
     <nav className="w-full sticky top-0 z-30 backdrop-blur-xl bg-white/40 border-b border-white/60">
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         <div className="flex-1 flex justify-start">
-          <Link to="/" className="text-3xl font-bold italic font-primary tracking-tight">
+          <Link
+            to={token ? "/home" : "/"}
+            className="text-3xl italic font-primary tracking-tight"
+          >
             p.me
           </Link>
         </div>
@@ -19,10 +22,12 @@ export const Navbar = () => {
         {/* 2. Centro (Menu de Links) */}
         <div
           className={
-            token ? "flex justify-center gap-4 md:gap-8 text-sm font-medium text-gray-600 font-secondary" : "hidden"
+            token ? "flex justify-center gap-4 md:gap-8 text-sm font-medium font-secondary" : "hidden"
           }
         >
-          <Link to="/" className="hover:text-black transition-colors text-gray-900">
+          {/* Aponta direto para /home: "/" redireciona quem está logado de
+              volta para cá, o que fazia o link piscar a landing no caminho. */}
+          <Link to="/home" className="hover:text-black transition-colors text-gray-900">
             Home
           </Link>
           <Link to="/ideias" className="hover:text-black transition-colors text-gray-900">

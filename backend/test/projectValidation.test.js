@@ -18,6 +18,32 @@ test("aceita mode dentro da lista permitida", () => {
   assert.equal(validateProjectInput({ title: "Meu post", mode: "spotifyWrapped" }), null);
 });
 
+test("aceita os templates novos (notes e tweet)", () => {
+  assert.equal(validateProjectInput({ title: "Comunicado", mode: "notes" }), null);
+  assert.equal(validateProjectInput({ title: "Tweet", mode: "tweet" }), null);
+});
+
+test("a lista de modes do backend cobre todos os templates do frontend", () => {
+  // Se um template novo for criado no frontend sem ser liberado aqui, o
+  // salvamento falha com 400 — este teste trava esse descompasso.
+  const frontendModes = [
+    "spotify",
+    "letterboxd",
+    "whatsapp",
+    "instagram",
+    "spotifyWrapped",
+    "notes",
+    "tweet",
+  ];
+  for (const mode of frontendModes) {
+    assert.equal(
+      validateProjectInput({ title: "x", mode }),
+      null,
+      `mode "${mode}" deveria ser aceito pelo backend`
+    );
+  }
+});
+
 test("rejeita mode fora da lista permitida", () => {
   assert.match(
     validateProjectInput({ title: "Meu post", mode: "admin" }),

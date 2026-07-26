@@ -35,13 +35,15 @@ const plans = [
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div className="bg-paper text-ink min-h-screen selection:bg-black selection:text-white">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-black">
+        {/* Mesmo display serif do resto do app: esta página estava em
+            font-sans genérica, destoando de todas as outras. */}
+        <h1 className="font-primary text-ink mb-4 text-4xl md:text-5xl">
           Escolha o plano ideal
         </h1>
-        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+        <p className="font-secondary text-ink-soft mx-auto max-w-2xl text-lg md:text-xl">
           Preços simples e transparentes para todos os tamanhos de projetos. Sem surpresas ou taxas ocultas.
         </p>
       </div>
@@ -52,33 +54,35 @@ export default function App() {
           {plans.map((plan, index) => (
             <div 
               key={index} 
-              className={`relative flex flex-col p-8 rounded-2xl border-2 transition-transform duration-300 hover:-translate-y-1 ${
-                plan.highlighted 
-                  ? 'bg-black text-white border-black shadow-2xl scale-105 z-10' 
-                  : 'bg-white text-black border-black shadow-sm'
+              className={`relative flex flex-col rounded-3xl p-8 transition-transform duration-300 hover:-translate-y-1 ${
+                plan.highlighted
+                  ? 'bg-ink text-paper z-10 scale-105 shadow-2xl'
+                  : 'border border-black/10 bg-white/70 shadow-sm backdrop-blur-xl'
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <span className="bg-white text-black border-2 border-black text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <span className="font-secondary bg-paper text-ink rounded-full border border-black/10 px-3 py-1 text-xs font-semibold tracking-wider uppercase">
                     Mais Popular
                   </span>
                 </div>
               )}
 
               <div className="mb-8">
-                <h3 className={`text-2xl font-bold mb-2 ${plan.highlighted ? 'text-white' : 'text-black'}`}>
-                  {plan.name}
-                </h3>
-                <p className={`text-sm min-h-[40px] ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}>
+                <h3 className="font-primary mb-2 text-2xl">{plan.name}</h3>
+                <p
+                  className={`font-secondary min-h-[40px] text-sm ${plan.highlighted ? 'text-white/70' : 'text-ink-soft'}`}
+                >
                   {plan.description}
                 </p>
               </div>
 
-              <div className="mb-8 flex items-baseline text-5xl font-extrabold">
+              <div className="font-primary mb-8 flex items-baseline text-5xl">
                 {plan.price}
                 {plan.period && (
-                  <span className={`text-xl font-medium ml-1 ${plan.highlighted ? 'text-gray-300' : 'text-gray-500'}`}>
+                  <span
+                    className={`font-secondary ml-1 text-xl font-medium ${plan.highlighted ? 'text-white/70' : 'text-ink-soft'}`}
+                  >
                     {plan.period}
                   </span>
                 )}
@@ -86,9 +90,11 @@ export default function App() {
 
               <ul className="mb-8 flex-1 space-y-4">
                 {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-start">
-                    <Check className={`h-6 w-6 shrink-0 mr-3 ${plan.highlighted ? 'text-white' : 'text-black'}`} />
-                    <span className={plan.highlighted ? 'text-gray-200' : 'text-gray-700'}>
+                  <li key={featureIndex} className="font-secondary flex items-start text-sm">
+                    <Check
+                      className={`mr-3 h-5 w-5 shrink-0 ${plan.highlighted ? 'text-paper' : 'text-ink'}`}
+                    />
+                    <span className={plan.highlighted ? 'text-white/90' : 'text-ink-soft'}>
                       {feature}
                     </span>
                   </li>
@@ -97,10 +103,10 @@ export default function App() {
 
               <button
                 onClick={() => window.location.href = "/cadastro"}
-                className={`w-full py-4 px-6 rounded-lg font-bold text-center transition-colors duration-200 border-2 ${
+                className={`font-secondary h-12 w-full rounded-full px-6 text-sm font-medium transition-colors ${
                   plan.highlighted
-                    ? 'bg-white text-black border-white hover:bg-gray-100'
-                    : 'bg-black text-white border-black hover:bg-white hover:text-black'
+                    ? 'bg-paper text-ink hover:bg-white'
+                    : 'bg-ink text-paper hover:bg-black'
                 }`}
               >
                 {plan.buttonText}
@@ -111,11 +117,20 @@ export default function App() {
       </div>
 
       {/* Footer / FAQ Hint */}
-      <div className="bg-gray-50 border-t-2 border-black py-12">
+      <div className="border-t border-black/10 bg-black/[0.02] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-black font-medium mb-2">Tem alguma dúvida sobre os planos?</p>
-          <a href="#" className="text-black underline font-bold hover:text-gray-600 transition-colors">
-            Fale com a nossa equipe
+          <p className="font-secondary text-ink mb-2 text-sm font-medium">
+            Tem alguma dúvida sobre os planos?
+          </p>
+          {/* Antes era href="#" — um link que não levava a lugar nenhum.
+              Aponta para o mesmo contato já usado no rodapé do app. */}
+          <a
+            href="https://www.linkedin.com/in/kauanbgs/"
+            target="_blank"
+            rel="noreferrer"
+            className="font-secondary text-ink text-sm underline underline-offset-4 transition-colors hover:text-ink-soft"
+          >
+            Falar com quem fez
           </a>
         </div>
       </div>

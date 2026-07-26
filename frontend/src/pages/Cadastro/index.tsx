@@ -40,19 +40,24 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="bg-[url('/fundoLogin.png')] bg-cover bg-center min-h-screen items-center flex align-center justify-center flex-col">
-      <main className="w-[31%] bg-white rounded-lg items-center align-center justify-center min-h-125 w-[80%] max-w-105">
-        <div className="flex items-center justify-center p-10">
-          <button onClick={() => navigate("/")}>
-            <img src="/logoPerforma.png" alt="Performa" className="w-48 cursor-pointer" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col p-6">
-          <label htmlFor="name" className="flex flex-col mb-3">
+    <div className="bg-[url('/fundoLogin.png')] bg-cover bg-center min-h-screen flex items-center justify-center p-6">
+      <main className="w-full max-w-[26rem] rounded-3xl border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.18)] p-8 sm:p-10">
+        <button
+          onClick={() => navigate("/")}
+          className="mx-auto mb-8 block"
+          aria-label="Voltar para a página inicial"
+        >
+          <img src="/logoPerforma.png" alt="Performa" className="w-40 cursor-pointer" />
+        </button>
+
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          <label htmlFor="name" className="mb-4 flex flex-col gap-1.5">
             <Text variant="text" font="secondary">Nome</Text>
             <Input
               type="text"
-              placeholder="Kauanbgs13"
+              placeholder="Como você quer ser chamado"
+              autoComplete="name"
+              required
               fill
               onChange={onChange}
               id="name"
@@ -60,11 +65,13 @@ export default function Cadastro() {
               value={user.name}
             />
           </label>
-          <label htmlFor="email" className="flex flex-col mb-3">
+          <label htmlFor="email" className="mb-4 flex flex-col gap-1.5">
             <Text variant="text" font="secondary">Email</Text>
             <Input
               type="email"
-              placeholder="Kauanbgs13@gmail.com"
+              placeholder="voce@exemplo.com"
+              autoComplete="email"
+              required
               fill
               onChange={onChange}
               id="email"
@@ -72,11 +79,14 @@ export default function Cadastro() {
               value={user.email}
             />
           </label>
-          <label htmlFor="password" className="flex flex-col mb-6">
+          <label htmlFor="password" className="mb-6 flex flex-col gap-1.5">
             <Text variant="text" font="secondary">Senha</Text>
             <Input
               type="password"
-              placeholder="Senhaboa123!"
+              placeholder="Mínimo de 8 caracteres"
+              autoComplete="new-password"
+              minLength={8}
+              required
               fill
               onChange={onChange}
               id="password"
@@ -84,29 +94,24 @@ export default function Cadastro() {
               value={user.password}
             />
           </label>
-          <Button type="submit" text="Entrar" fill className="w-full" font="secondary" />
-          <Text variant="text" className="mt-4" font="secondary">
-            Esqueceu sua senha?{" "}
-            <Link to="/" className="cursor-pointer hover:underline">
-              Recuperar senha
-            </Link>
-          </Text>
-          <div className="min-h-[1.25rem] mt-2">
+
+          <Button type="submit" className="w-full">Criar conta</Button>
+
+          <div className="min-h-[1.25rem] mt-2" aria-live="polite">
             {feedback.message && (
-              <span className={`text-sm ${feedback.type === "error" ? "text-red-500" : "text-green-500"}`}>
+              <span className={`text-sm font-secondary ${feedback.type === "error" ? "text-red-600" : "text-green-600"}`}>
                 {feedback.message}
               </span>
             )}
           </div>
         </form>
-        <div className="flex flex-col p-7 justify-center items-center gap-12">
-          <Text variant="text" className="text-sm mt-8" font="secondary">
-            Já tem uma conta?{" "}
-            <Link to="/login" className="cursor-pointer hover:underline">
-              Faça login
-            </Link>
-          </Text>
-        </div>
+
+        <Text variant="text" className="mt-8 text-center" font="secondary">
+          Já tem uma conta?{" "}
+          <Link to="/login" className="cursor-pointer underline underline-offset-4">
+            Faça login
+          </Link>
+        </Text>
       </main>
     </div>
   );

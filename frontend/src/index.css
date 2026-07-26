@@ -1,12 +1,46 @@
-@import "tailwindcss";  
+@import "tailwindcss";
+
+/* Tipografia auto-hospedada — sem CDN externo, sem FOUT de terceiros.
+   O unicode-range de cada subset garante que só o necessário é baixado. */
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "@fontsource-variable/archivo/index.css";
+
+/* ── Tokens ─────────────────────────────────────────────────────────────
+   Display: Instrument Serif — didone editorial, itálico com bastante
+   personalidade. É a "roupa de gala" da interface: usada com parcimônia,
+   só em títulos e no wordmark.
+   Corpo: Archivo — grotesca de proporção levemente estreita, legível nos
+   tamanhos pequenos e densos do editor. É a voz neutra que deixa o canvas
+   (o conteúdo que o usuário cria) ser o protagonista.                     */
+@theme {
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body: "Archivo Variable", "Archivo", system-ui, sans-serif;
+
+  /* Tinta quente em vez de preto puro: convive melhor com o fundo creme
+     e com os pastéis do mesh sem "furar" a composição. */
+  --color-ink: #14110f;
+  --color-ink-soft: #5c5651;
+  --color-ink-faint: #8c847d;
+  --color-paper: #fdfbf9;
+
+  /* Acento de interação. Não é decorativo: existe para foco de teclado e
+     estados ativos, e conversa com o blob violeta do fundo. */
+  --color-accent: #6d28d9;
+}
 
 :root {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
-  --font-primary: 'Playfair Display', serif;
-  --font-secondary: 'Montserrat', sans-serif;  
 
+  /* Aliases legados: todo o app já usa .font-primary / .font-secondary.
+     Mantidos para que a troca de tipografia não exija tocar em ~200 usos. */
+  --font-primary: var(--font-display);
+  --font-secondary: var(--font-body);
+
+  /* Sem bold/itálico sintético — Instrument Serif tem itálico real e não
+     tem bold; deixar o browser "engordar" o desenho estragaria a face. */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,7 +49,41 @@
 
 body {
   min-height: 100vh;
-}    
-.font-primary { font-family: var(--font-primary); }
-.font-secondary { font-family: var(--font-secondary); }
-        
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.font-primary {
+  font-family: var(--font-primary);
+}
+.font-secondary {
+  font-family: var(--font-secondary);
+}
+
+/* O display é uma didone: nos tamanhos grandes o tracking padrão fica
+   largo demais. Fecha um pouco e reduz a entrelinha para o corte editorial. */
+.font-primary {
+  letter-spacing: -0.015em;
+}
+
+/* ── Piso de acessibilidade ────────────────────────────────────────────
+   Foco visível em tudo que é operável. O Input tinha focus:outline-none
+   sem substituto — teclado ficava completamente sem rastro. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Quem pediu menos movimento recebe menos movimento. Vale para o marquee
+   da landing, os blobs do Home e o campo de partículas do fundo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

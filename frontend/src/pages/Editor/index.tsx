@@ -16,6 +16,8 @@ import {
   Instagram,
   MessageCircle,
   Trash2,
+  StickyNote,
+  Twitter,
 } from "lucide-react";
 import "../../index.css";
 import { useState, useRef, useEffect } from "react";
@@ -25,6 +27,8 @@ import api, { API_BASE_URL } from "../../services/axios";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 import InstagramCanvas from "../../components/canvas/instagramCanvas";
 import SpotifyWrappedCanvas from "../../components/canvas/spotifyWrappedCanvas";
+import NotesCanvas from "../../components/canvas/notesCanvas";
+import TweetCanvas from "../../components/canvas/tweetCanvas";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useToast } from "../../context/ToastContext";
 import { CANVAS_DIMENSIONS, type Mode } from "../../constants/modes";
@@ -545,6 +549,60 @@ export default function Editor() {
                   Fake Spotify Wrapped
                 </span>
               </button>
+              <button
+                onClick={() => {
+                  setActiveMode("notes");
+                  const [w, h] = CANVAS_DIMENSIONS.notes;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    itemTitle: "Comunicado",
+                    artist: "12 de março de 2026 às 03:14",
+                    lyrics:
+                      "Venho por meio desta esclarecer o ocorrido.\n\nNão foi minha intenção que as coisas tomassem essa proporção, e assumo total responsabilidade pelo que aconteceu.\n\nCom carinho,",
+                    glassmorphism: true,
+                    contentColor: "",
+                  }));
+                }}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "notes" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
+                  <StickyNote className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Nota de Esclarecimento
+                </span>
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMode("tweet");
+                  const [w, h] = CANVAS_DIMENSIONS.tweet;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    itemTitle: "Seu Nome",
+                    artist: "@seuusuario",
+                    lyrics:
+                      "eu não deveria estar postando isso às 3 da manhã mas enfim",
+                    glassmorphism: true,
+                    contentColor: "",
+                  }));
+                }}
+                className="col-span-1 flex flex-col gap-2 group cursor-pointer"
+              >
+                <div
+                  className={`aspect-[3/4] rounded-lg border-2 ${activeMode === "tweet" ? "border-gray-900" : "border-gray-200"} flex items-center justify-center bg-gray-50 group-hover:bg-white transition-colors`}
+                >
+                  <Twitter className="w-8 h-8 text-gray-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-900 text-center">
+                  Print de Tweet
+                </span>
+              </button>
             </div>
           )}
           {activeTool === "text" && activeMode === "spotify" && (
@@ -585,6 +643,151 @@ export default function Editor() {
                   className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[150px] resize-y"
                   placeholder="Digite a letra da música..."
                 />
+              </div>
+            </div>
+          )}
+
+          {activeTool === "text" && activeMode === "notes" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Título da nota
+                </label>
+                <input
+                  type="text"
+                  value={content.itemTitle}
+                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Comunicado"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Data e hora
+                </label>
+                <input
+                  type="text"
+                  value={content.artist}
+                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="12 de março de 2026 às 03:14"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Texto
+                </label>
+                <textarea
+                  value={content.lyrics}
+                  onChange={(e) => handleInputChange("lyrics", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[200px] resize-y"
+                  placeholder="Venho por meio desta esclarecer..."
+                />
+              </div>
+              <button
+                onClick={() =>
+                  handleInputChange("glassmorphism", !(content.glassmorphism !== false) as any)
+                }
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors text-left"
+              >
+                {content.glassmorphism !== false ? "Modo escuro" : "Modo claro"}
+                <span className="text-gray-400"> · toque para alternar</span>
+              </button>
+            </div>
+          )}
+
+          {activeTool === "text" && activeMode === "tweet" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Nome
+                </label>
+                <input
+                  type="text"
+                  value={content.itemTitle}
+                  onChange={(e) => handleInputChange("itemTitle", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="Seu Nome"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Usuário
+                </label>
+                <input
+                  type="text"
+                  value={content.artist}
+                  onChange={(e) => handleInputChange("artist", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                  placeholder="@seuusuario"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Tweet
+                </label>
+                <textarea
+                  value={content.lyrics}
+                  onChange={(e) => handleInputChange("lyrics", e.target.value)}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all min-h-[120px] resize-y"
+                  placeholder="O que está acontecendo?"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Reposts
+                  </label>
+                  <input
+                    type="number"
+                    value={content.followers ?? ""}
+                    onChange={(e) => handleInputChange("followers", e.target.value)}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                    placeholder="2400"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Curtidas
+                  </label>
+                  <input
+                    type="number"
+                    value={content.likes ?? ""}
+                    onChange={(e) => handleInputChange("likes", e.target.value)}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                    placeholder="18300"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Respostas
+                  </label>
+                  <input
+                    type="number"
+                    value={content.posts ?? ""}
+                    onChange={(e) => handleInputChange("posts", e.target.value)}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-900 focus:bg-white transition-all"
+                    placeholder="128"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => handleInputChange("rating", (content.rating === 0 ? 5 : 0) as any)}
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors text-left"
+                >
+                  {content.rating === 0 ? "Sem selo de verificado" : "Com selo de verificado"}
+                  <span className="text-gray-400"> · toque para alternar</span>
+                </button>
+                <button
+                  onClick={() =>
+                    handleInputChange("glassmorphism", !(content.glassmorphism !== false) as any)
+                  }
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors text-left"
+                >
+                  {content.glassmorphism !== false ? "Modo escuro" : "Modo claro"}
+                  <span className="text-gray-400"> · toque para alternar</span>
+                </button>
               </div>
             </div>
           )}
@@ -1180,6 +1383,98 @@ export default function Editor() {
             </div>
           )}
 
+          {activeTool === "uploads" && activeMode === "tweet" && (
+            <div className="flex flex-col gap-6">
+              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Foto de Perfil
+              </h1>
+              <div className="grid grid-cols-2 gap-2">
+                {content.profileImages?.map((img: any, index: any) => (
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
+                    <img
+                      src={img}
+                      alt={`Foto de perfil enviada ${index + 1}`}
+                      onClick={() => setContent((prev: any) => ({ ...prev, profileImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("profile", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      aria-label="Remover imagem"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "profile")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Imagem do Tweet
+              </h1>
+              <div className="grid grid-cols-2 gap-2">
+                {content.coverImages?.map((img: any, index: any) => (
+                  <div key={index} className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all">
+                    <img
+                      src={img}
+                      alt={`Imagem do tweet enviada ${index + 1}`}
+                      onClick={() => setContent((prev: any) => ({ ...prev, coverImage: img }))}
+                      className="w-full h-full object-cover cursor-pointer"
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleImageDelete("cover", index); }}
+                      className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      aria-label="Remover imagem"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <label className="flex items-center justify-center w-full p-4 bg-gray-100/50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all">
+                  <div className="flex flex-col items-center gap-2 text-gray-500">
+                    <Download className="w-6 h-6 rotate-180" />
+                    <span className="text-sm font-medium">Fazer Upload</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "cover")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <button
+                onClick={() => setContent((prev: any) => ({ ...prev, coverImage: "" }))}
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
+                Tweet sem imagem
+              </button>
+            </div>
+          )}
+
+          {activeTool === "uploads" && activeMode === "notes" && (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-gray-500 leading-relaxed">
+                A nota é só texto — é isso que faz o formato parecer espontâneo.
+              </p>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Use a aba <strong className="text-gray-900">Texto</strong> para escrever
+                o comunicado e alternar entre modo claro e escuro.
+              </p>
+            </div>
+          )}
+
           {activeTool === "uploads" && activeMode === "instagram" && (
             <div className="flex flex-col gap-6">
               <h1 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -1551,6 +1846,12 @@ export default function Editor() {
             )}
             {activeMode === "spotifyWrapped" && (
               <SpotifyWrappedCanvas content={content} handleBlur={handleBlur} />
+            )}
+            {activeMode === "notes" && (
+              <NotesCanvas content={content} handleBlur={handleBlur} />
+            )}
+            {activeMode === "tweet" && (
+              <TweetCanvas content={content} handleBlur={handleBlur} />
             )}
 
           </div>

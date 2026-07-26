@@ -31,10 +31,13 @@ export default function LandingPage() {
       {/* Estilos Globais e Animações */}
       <style>{`
         
-        /* Simulação da fonte customizada com fallback */
+        /* A palavra "performa" é o momento de assinatura da página: o display
+           em itálico, bem grande e com tracking fechado. Instrument Serif tem
+           itálico desenhado (não sintético), então aguenta esse tamanho. */
         .font-melodrame {
-          font-family: 'Relationship of Melodrame', 'Playfair Display', serif;
+          font-family: var(--font-display);
           font-style: italic;
+          letter-spacing: -0.03em;
         }
 
         /* Animação do Marquee */
@@ -123,7 +126,7 @@ export default function LandingPage() {
               </a>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-xs text-gray-500 font-secondary">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 text-xs text-ink-soft font-secondary">
               <span>✓ grátis para começar</span>
               <span>✓ sem precisar de design</span>
               <span>✓ pronto em segundos</span>
@@ -139,7 +142,7 @@ export default function LandingPage() {
               </div>
               <div className="h-2.5 w-4/5 bg-white/50 rounded-full mb-2"></div>
               <div className="h-2.5 w-3/5 bg-white/40 rounded-full mb-4"></div>
-              <div className="flex items-center gap-1.5 mt-auto text-gray-600">
+              <div className="flex items-center gap-1.5 mt-auto text-ink-soft">
                 <Heart className="w-3.5 h-3.5 fill-pink-400 text-pink-400" />
                 <span className="text-[11px] font-secondary">feed pronto</span>
               </div>
@@ -193,7 +196,7 @@ export default function LandingPage() {
 
         <a
           href="#ferramentas"
-          className="hidden lg:flex flex-col items-center gap-1 self-center mb-8 text-gray-400 hover:text-gray-700 transition-colors relative z-10"
+          className="hidden lg:flex flex-col items-center gap-1 self-center mb-8 text-ink-soft hover:text-ink transition-colors relative z-10"
           aria-label="Rolar para ferramentas"
         >
           <span className="text-[10px] tracking-[0.2em] font-secondary uppercase">
@@ -206,7 +209,7 @@ export default function LandingPage() {
       {/* Footer Marquee */}
       <footer className="w-full bg-white/80 border-t border-gray-200 py-6 overflow-hidden relative z-20">
         <div className="whitespace-nowrap animate-scroll">
-          <span className="text-xs tracking-[0.3em] font-medium text-gray-400 inline-block font-secondary">
+          <span className="text-xs tracking-[0.3em] font-medium text-ink-faint inline-block font-secondary">
             AESTHETIC - CULTURA - ARTE &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
             AESTHETIC - CULTURA - ARTE &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
             AESTHETIC - CULTURA - ARTE &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
@@ -239,7 +242,7 @@ export default function LandingPage() {
                 expressão
               </span>
             </h2>
-            <p className="text-gray-500 font-secondary max-w-xl mx-auto text-lg">
+            <p className="text-ink-soft font-secondary max-w-xl mx-auto text-lg">
               Tudo o que você precisa para transformar pensamentos em arte
               visual.
             </p>
@@ -254,7 +257,7 @@ export default function LandingPage() {
               <h3 className="text-2xl font-primary text-gray-900 font-medium">
                 Templates Clean
               </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
+              <p className="text-ink-soft font-secondary leading-relaxed">
                 Layouts prontos com estética editorial para você aplicar em
                 segundos, sem esforço de design.
               </p>
@@ -268,7 +271,7 @@ export default function LandingPage() {
               <h3 className="text-2xl font-primary text-gray-900 font-medium">
                 Textos Personalizados
               </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
+              <p className="text-ink-soft font-secondary leading-relaxed">
                 Crie legendas e textos com a sua cara, sem precisar se preocupar com a formatação.
               </p>
             </div>
@@ -281,7 +284,7 @@ export default function LandingPage() {
               <h3 className="text-2xl font-primary text-gray-900 font-medium">
                 Mobile First
               </h3>
-              <p className="text-gray-600 font-secondary leading-relaxed">
+              <p className="text-ink-soft font-secondary leading-relaxed">
                 Uma interface que flui naturalmente no seu celular. Toque,
                 arraste e crie sem fricção.
               </p>
@@ -311,7 +314,7 @@ export default function LandingPage() {
             </span>
             ?
           </h2>
-          <p className="text-gray-500 font-secondary text-lg mb-10 max-w-lg mx-auto leading-relaxed">
+          <p className="text-ink-soft font-secondary text-lg mb-10 max-w-lg mx-auto leading-relaxed">
             Junte-se à comunidade de criadores que estão redefinindo a estética
             nas redes sociais.
           </p>

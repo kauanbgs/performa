@@ -1,4 +1,13 @@
-const ALLOWED_MODES = ["free", "spotify", "letterboxd", "whatsapp", "instagram", "spotifyWrapped"];
+const ALLOWED_MODES = [
+  "free",
+  "spotify",
+  "letterboxd",
+  "whatsapp",
+  "instagram",
+  "spotifyWrapped",
+  "notes",
+  "tweet",
+];
 const MAX_TITLE_LENGTH = 100;
 const MAX_CONTENT_BYTES = 200 * 1024;
 

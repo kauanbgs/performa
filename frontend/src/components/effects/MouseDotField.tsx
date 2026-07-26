@@ -25,6 +25,11 @@ export default function MouseDotField() {
     const context = canvasEl?.getContext("2d");
     if (!canvasEl || !context) return;
 
+    // O CSS de prefers-reduced-motion não alcança um loop de rAF: sem este
+    // guard o campo continuaria animando (e consumindo bateria) para quem
+    // pediu menos movimento.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     // Aliases com tipo não-nulo: dentro dos closures abaixo (resize/render)
     // o TS não consegue provar que canvasEl/context continuam não-nulos.
     const canvas = canvasEl;
@@ -71,6 +76,9 @@ export default function MouseDotField() {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       buildGrid();
+      // Redimensionar limpa o canvas; sem o loop de animação rodando,
+      // é preciso redesenhar aqui.
+      if (reduceMotion) render();
     }
 
     function onMouseMove(e: MouseEvent) {
@@ -108,11 +116,19 @@ export default function MouseDotField() {
         ctx.fill();
       }
 
-      rafId = requestAnimationFrame(render);
+      if (!reduceMotion) rafId = requestAnimationFrame(render);
     }
 
     resize();
     window.addEventListener("resize", resize);
+
+    // Com movimento reduzido o campo é desenhado uma vez e fica parado:
+    // sem parallax de mouse, sem loop de animação.
+    if (reduceMotion) {
+      render();
+      return () => window.removeEventListener("resize", resize);
+    }
+
     window.addEventListener("mousemove", onMouseMove);
     rafId = requestAnimationFrame(render);
 

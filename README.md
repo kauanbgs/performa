@@ -88,9 +88,18 @@ http://localhost:5173
 
 * Spotify (post musical)
 * Spotify Wrapped
-* Letterboxd
-* WhatsApp
-* Instagram
+* Letterboxd (review de filme)
+* WhatsApp (conversa)
+* Instagram (perfil e direct)
+* Notas do iPhone (nota de esclarecimento)
+* X / Twitter (print de tweet)
+
+Para adicionar um template novo, são cinco pontos: o canvas em
+`frontend/src/components/canvas/`, o registro em `frontend/src/constants/modes.ts`
+(e `modeIcons.tsx`), o painel de edição em `frontend/src/pages/Editor/`, o
+render em `components/canvas/exportTemplate.tsx` e a liberação do `mode` em
+`backend/src/utils/projectValidation.js` — este último tem teste que falha se
+for esquecido.
 
 ## ✨ Funcionalidades
 
