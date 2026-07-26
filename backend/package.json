@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
     "test": "node --test test/",
-    "postinstall": "npx puppeteer browsers install chrome"
+    "postinstall": "prisma generate && npx puppeteer browsers install chrome"
   },
   "author": "Kauan Borges Plaza",
   "license": "ISC",
