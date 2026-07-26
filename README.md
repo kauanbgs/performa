@@ -23,6 +23,8 @@ Antes de começar, você precisará ter instalado:
 
 ## 🔧 Instalação e Configuração
 
+O projeto é dividido em duas pastas independentes, `backend/` e `frontend/` — cada uma com seu próprio `package.json`.
+
 ### Clone o repositório
 
 ```bash
@@ -30,36 +32,46 @@ git clone https://github.com/kauanbgs/performa.git
 cd performa
 ```
 
-### Instale as dependências
+### Backend
 
 ```bash
+cd backend
 npm install
 ```
 
-### Configure o ambiente
+Copie `.env.example` para `.env` e preencha os valores (`DATABASE_URL`, `JWT_SECRET`, etc.):
 
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/performa"
+```bash
+cp .env.example .env
 ```
 
-### Execute as migrações
+Execute as migrações e suba o servidor:
 
 ```bash
 npx prisma migrate dev
+npm run dev
 ```
 
-### Inicie o projeto
+A API sobe em `http://localhost:3001/performa` (porta configurável via `PORT`).
+
+### Frontend
 
 ```bash
+cd frontend
+npm install
+```
+
+Copie `.env.example` para `.env` e ajuste `VITE_API_URL` se sua API não estiver na porta padrão:
+
+```bash
+cp .env.example .env
 npm run dev
 ```
 
 ### Acesse
 
 ```text
-http://localhost:3000
+http://localhost:5173
 ```
 
 ## 📱 Como Usar
@@ -74,13 +86,11 @@ http://localhost:3000
 
 ### Templates Disponíveis
 
-* Spotify
-* Instagram Direct
+* Spotify (post musical)
+* Spotify Wrapped
+* Letterboxd
 * WhatsApp
-* Discord
-* YouTube
-* TikTok
-* X (Twitter)
+* Instagram
 
 ## ✨ Funcionalidades
 
@@ -95,15 +105,23 @@ http://localhost:3000
 ## 📂 Estrutura do Projeto
 
 ```text
-src/
-├── components/
-├── pages/
-├── services/
-├── hooks/
-├── utils/
+backend/
+├── src/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── routes/
+│   └── utils/
+├── prisma/
+│   └── schema.prisma
+└── test/
 
-prisma/
-└── schema.prisma
+frontend/
+└── src/
+    ├── components/
+    ├── pages/
+    ├── services/
+    ├── hooks/
+    └── utils/
 ```
 
 ## ⚠️ Aviso

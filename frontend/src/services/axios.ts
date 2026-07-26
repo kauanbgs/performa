@@ -1,8 +1,24 @@
 import axios from "axios";
 
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "https://performa-i6sk.onrender.com/performa";
+
 const api = axios.create({
-    baseURL: "https://performa-i6sk.onrender.com/performa",
+    baseURL: API_BASE_URL,
 });
+
+// Sessão expirada/inválida: limpa o token e manda pro login em vez de deixar
+// cada página tratar (ou ignorar) o 401 por conta própria.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && window.location.pathname !== "/login") {
+      localStorage.removeItem("token");
+      window.location.assign("/login");
+    }
+    return Promise.reject(error);
+  }
+);
 
 const sheets = {
   postLogin: (user: any) => api.post("/login", user),

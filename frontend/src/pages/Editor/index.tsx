@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   LayoutTemplate,
   Type,
@@ -21,18 +21,17 @@ import "../../index.css";
 import { useState, useRef, useEffect } from "react";
 import SpotifyCanvas from "../../components/canvas/spotifyCanvas";
 import LetterboxdCanvas from "../../components/canvas/letterboxdCanvas";
-import api from "../../services/axios";
+import api, { API_BASE_URL } from "../../services/axios";
 import WhatsappCanvas from "../../components/canvas/whatsappCanvas";
 import InstagramCanvas from "../../components/canvas/instagramCanvas";
 import SpotifyWrappedCanvas from "../../components/canvas/spotifyWrappedCanvas";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
+import { useToast } from "../../context/ToastContext";
+import { CANVAS_DIMENSIONS, type Mode } from "../../constants/modes";
 
 export default function Editor() {
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem("token") as string;
-  if (!token) {
-    navigate("/");
-  }
+  const token = useRequireAuth();
+  const { showToast } = useToast();
 
   const { id } = useParams() as { id: string };
 
@@ -45,6 +44,7 @@ export default function Editor() {
       await api.updateProject(token, id, { ...content, mode: activeMode});
     } catch (err) {
       console.error(err);
+      showToast("Não foi possível salvar as alterações. Tente novamente.");
     }
 
     setTimeout(() => {
@@ -58,6 +58,7 @@ export default function Editor() {
   const [zoom, setZoom] = useState(1);
   const [activeMode, setActiveMode] = useState("spotify");
   const [loading, setLoading] = useState(false);
+  const [loadingProject, setLoadingProject] = useState(true);
   const [loadingDownload, setLoadingDownload] = useState(false);
   const [content, setContent] = useState<any>({
     title: "",
@@ -114,17 +115,17 @@ export default function Editor() {
               projectData.previewImage || projectData.content.previewImage || "/transparente.jpg",
           });
           setActiveMode(projectData.mode);
-          if (projectData.mode === "whatsapp" || projectData.mode === "instagram") {
-            setWidth(390);
-            setHeight(780);
-          } else {
-            setWidth(500);
-            setHeight(700);
-          }
+          const [dimWidth, dimHeight] = CANVAS_DIMENSIONS[projectData.mode as Mode] ?? [500, 700];
+          setWidth(dimWidth);
+          setHeight(dimHeight);
         }
       })
-      .catch((err: any) => console.error("Erro ao carregar projeto:", err));
-  }, [id]);
+      .catch((err: any) => {
+        console.error("Erro ao carregar projeto:", err);
+        showToast("Não foi possível carregar este projeto.");
+      })
+      .finally(() => setLoadingProject(false));
+  }, [id, token, showToast]);
 
   const uploadImage = async (file: File) => {
     const formData = new FormData();
@@ -165,7 +166,7 @@ export default function Editor() {
     const currentImages = (content[imagesKey] as string[]) || [];
 
     if (currentImages.length >= 2) {
-      alert("Você só pode adicionar até 2 imagens de cada tipo.");
+      showToast("Você só pode adicionar até 2 imagens de cada tipo.");
       return;
     }
 
@@ -205,6 +206,7 @@ export default function Editor() {
       });
     } catch (err) {
       console.error("Erro no upload:", err);
+      showToast("Não foi possível enviar essa imagem. Tente novamente.");
     }
   };
 
@@ -243,7 +245,7 @@ export default function Editor() {
       await api.updateProject(token, id, { ...content, mode: activeMode });
 
       const response = await fetch(
-        "https://performa-i6sk.onrender.com/performa/export",
+        `${API_BASE_URL}/export`,
         {
           method: "POST",
           headers: {
@@ -256,6 +258,7 @@ export default function Editor() {
 
       if (!response.ok) {
         console.error("Erro na exportação:", await response.text());
+        showToast("Não foi possível gerar a imagem. Tente novamente.");
         return;
       }
 
@@ -280,10 +283,20 @@ export default function Editor() {
       URL.revokeObjectURL(downloadUrl);
     } catch (err) {
       console.error(err);
+      showToast("Não foi possível gerar a imagem. Tente novamente.");
     } finally {
       setLoadingDownload(false);
     }
   };
+
+  if (loadingProject) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-gray-100">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col-reverse md:flex-row h-dvh bg-gray-100 font-sans overflow-hidden">
       {/* 1. Sidebar */}
@@ -395,6 +408,7 @@ export default function Editor() {
           <button
             className="md:hidden p-2 text-gray-400 hover:text-gray-800"
             onClick={() => setActiveTool(null)}
+            aria-label="Fechar painel"
           >
             ✕
           </button>
@@ -407,14 +421,18 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("spotify");
-                  setWidth(500);
-                  setHeight(700);
-                  content.itemTitle = "Nome da música";
-                  content.artist = "Nome do artista";
-                  content.lyrics = "Sua letra";
-                  content.bgImage = "/fundoLogin.png";
-                  content.contentColor = "#000000";
-                  content.glassmorphism = true;
+                  const [w, h] = CANVAS_DIMENSIONS.spotify;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    itemTitle: "Nome da música",
+                    artist: "Nome do artista",
+                    lyrics: "Sua letra",
+                    bgImage: "/fundoLogin.png",
+                    contentColor: "#000000",
+                    glassmorphism: true,
+                  }));
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -431,10 +449,14 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("letterboxd");
-                  setWidth(500);
-                  setHeight(700);
-                  content.itemTitle = "Nome do filme";
-                  content.bgImage = "/fundoLogin.png";
+                  const [w, h] = CANVAS_DIMENSIONS.letterboxd;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    itemTitle: "Nome do filme",
+                    bgImage: "/fundoLogin.png",
+                  }));
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -451,10 +473,14 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("whatsapp");
-                  setWidth(390);
-                  setHeight(780);
-                  content.itemTitle = "Kauan Plaza";
-                  content.bgImage = "/wppback.jpg";
+                  const [w, h] = CANVAS_DIMENSIONS.whatsapp;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    itemTitle: "Kauan Plaza",
+                    bgImage: "/wppback.jpg",
+                  }));
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -470,13 +496,17 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("instagram");
-                  setWidth(390);
-                  setHeight(780);
-                  content.bgColor = "#FFFFFF";
-                  content.bgImage = "";
-                  content.itemTitle = "Kauan Plaza";
-                  content.followers = "344";
-                  content.posts = "0";
+                  const [w, h] = CANVAS_DIMENSIONS.instagram;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    bgColor: "#FFFFFF",
+                    bgImage: "",
+                    itemTitle: "Kauan Plaza",
+                    followers: "344",
+                    posts: "0",
+                  }));
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -492,13 +522,17 @@ export default function Editor() {
               <button
                 onClick={() => {
                   setActiveMode("spotifyWrapped");
-                  setWidth(390);
-                  setHeight(780);
-                  content.bgColor = "#FFFFFF";
-                  content.bgImage = "";
-                  content.itemTitle = "Kauan Plaza";
-                  content.followers = "344";
-                  content.posts = "0";
+                  const [w, h] = CANVAS_DIMENSIONS.spotifyWrapped;
+                  setWidth(w);
+                  setHeight(h);
+                  setContent((prev: any) => ({
+                    ...prev,
+                    bgColor: "#FFFFFF",
+                    bgImage: "",
+                    itemTitle: "Kauan Plaza",
+                    followers: "344",
+                    posts: "0",
+                  }));
                 }}
                 className="col-span-1 flex flex-col gap-2 group cursor-pointer"
               >
@@ -1526,6 +1560,7 @@ export default function Editor() {
           <button
             className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"
             onClick={handleInputZoomMinus}
+            aria-label="Diminuir zoom"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
@@ -1535,12 +1570,14 @@ export default function Editor() {
           <button
             className="p-1.5 text-gray-500 hover:bg-gray-100 rounded"
             onClick={handleInputZoomPlus}
+            aria-label="Aumentar zoom"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <button
             className="p-1.5 text-gray-500 hover:bg-gray-100 rounded ml-1"
             onClick={handleInputZoomNormal}
+            aria-label="Restaurar zoom padrão"
           >
             <Maximize className="w-4 h-4" />
           </button>

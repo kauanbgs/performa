@@ -5,23 +5,26 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/",
     "postinstall": "npx puppeteer browsers install chrome"
   },
   "author": "Kauan Borges Plaza",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^25.2.2",
-    "dotenv": "^17.2.4",
     "prisma": "6.15.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "6.15.0",
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
     "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
     "puppeteer": "^24.37.2",
     "uuid": "^13.0.0"
   }

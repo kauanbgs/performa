@@ -35,7 +35,7 @@ export default function Login() {
       setTimeout(() => navigate("/home"), 1000); // Vai deixar o usuário ver a mensagem por 1seg
     } catch (error: any) {
       const msgErro =
-        error.response.data.error || "Erro ao conectar com o servidor.";
+        error.response?.data?.error || "Erro ao conectar com o servidor.";
       setFeedback({ message: msgErro, type: "error" });
     }
   };
@@ -45,14 +45,14 @@ export default function Login() {
       <main className="w-[31%] bg-white rounded-lg items-center align-center justify-center min-h-125 w-[80%] max-w-105">
         <div className="flex items-center justify-center p-10">
           <button onClick={() => navigate("/")}>
-            <img src="/logoPerforma.png" alt="" className="w-48 cursor-pointer" />
+            <img src="/logoPerforma.png" alt="Performa" className="w-48 cursor-pointer" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col p-6">
-          <div className="flex flex-col mb-3">
+          <label htmlFor="email" className="flex flex-col mb-3">
             <Text variant="text" font="secondary">Email</Text>
             <Input
-              type="text"
+              type="email"
               placeholder="Kauanbgs13@gmail.com"
               fill
               onChange={onChange}
@@ -60,8 +60,8 @@ export default function Login() {
               name="email"
               value={user.email}
             />
-          </div>
-          <div className="flex flex-col mb-6">
+          </label>
+          <label htmlFor="password" className="flex flex-col mb-6">
             <Text variant="text" font="secondary">Senha</Text>
             <Input
               type="password"
@@ -72,7 +72,7 @@ export default function Login() {
               name="password"
               value={user.password}
             />
-          </div>
+          </label>
           <Button type="submit" text="Entrar" fill className="w-full" font="secondary" />
           <Text variant="text" className="mt-4" font="secondary">
             Esqueceu sua senha?{" "}

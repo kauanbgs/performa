@@ -2,6 +2,7 @@ const router = require("express").Router();
 const projectController = require("../controllers/projectController");
 const userController = require("../controllers/userController");
 const auth = require("../middlewares/auth");
+const { authLimiter } = require("../middlewares/rateLimit");
 
 //      CONTROLLER PROJECT     //
 router.post("/project", auth, projectController.createProject);
@@ -12,8 +13,8 @@ router.post("/export", auth, projectController.exportProject);
 router.delete("/project/:id", auth, projectController.deleteProject);
 
 //      CONTROLLER USER     //
-router.post("/user", userController.createUser);
-router.post("/login", userController.loginUser);
+router.post("/user", authLimiter, userController.createUser);
+router.post("/login", authLimiter, userController.loginUser);
 router.get("/profile", auth, userController.getProfile);
 
 

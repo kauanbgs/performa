@@ -7,16 +7,14 @@ import { useRef } from "react";
 import api from "../../services/axios";
 import Footer from "../../components/layout/Footer";
 import { FastAverageColor } from "fast-average-color";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
+import { useToast } from "../../context/ToastContext";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token") as string;
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
+  const token = useRequireAuth();
+  const { showToast } = useToast();
 
   const [projects, setProjects] = useState<any[]>([]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -41,12 +39,13 @@ export default function Home() {
         setProjects(response.data);
       } catch (err) {
         console.error(err);
+        showToast("Não foi possível carregar seus projetos. Tente recarregar a página.");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [token]);
+  }, [token, showToast]);
 
   const toPastel = (r: number, g: number, b: number, mix = 0.35): string => {
     const pr = Math.round(r + (255 - r) * mix);
@@ -77,26 +76,21 @@ export default function Home() {
       } catch (e) {
         console.error("FastAverageColor error:", e);
       }
-    } else {
-      console.log("Image not loaded");
     }
   };
 
   const createProject = (title: string, content: any, mode: string) => {
     if (projects.length >= 3) {
-      alert("Você atingiu o limite de 3 projetos.");
+      showToast("Você atingiu o limite de 3 projetos.");
       return;
     }
     const defaultTitle = title || "Novo Projeto";
     api.postProject(token, { title: defaultTitle, content: content, mode: mode }).then((response: any) => {
       navigate(`/editor/${response.data.id}`);
     }).catch((err: any) => {
+      console.error("Erro ao criar projeto:", err);
       const msg = err?.response?.data?.error;
-      if (err?.response?.status === 403) {
-        alert(msg || "Limite de projetos atingido.");
-      } else {
-        console.error("Erro ao criar projeto:", err);
-      }
+      showToast(msg || "Não foi possível criar o projeto. Tente novamente.");
     });
   };
 
@@ -108,6 +102,7 @@ export default function Home() {
       setConfirmDeleteId(null);
     } catch (err) {
       console.error("Erro ao deletar projeto:", err);
+      showToast("Não foi possível deletar o projeto. Tente novamente.");
     } finally {
       setDeleting(false);
     }

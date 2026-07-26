@@ -1,5 +1,6 @@
 const prisma = require("../connect");
 const puppeteer = require("puppeteer");
+const { validateProjectInput } = require("../utils/projectValidation");
 
 const defaultContent = {
   title: "Título",
@@ -18,6 +19,43 @@ const defaultContent = {
 };
 
   let browserInstance = null;
+  let browserLaunchPromise = null;
+
+  async function closeBrowser() {
+    if (browserInstance) {
+      await browserInstance.close().catch(() => {});
+      browserInstance = null;
+      browserLaunchPromise = null;
+    }
+  }
+  process.once("SIGINT", closeBrowser);
+  process.once("SIGTERM", closeBrowser);
+
+  // Limita quantas páginas do Chromium podem renderizar exportações ao
+  // mesmo tempo, pra um pico de downloads simultâneos não estourar a memória.
+  const MAX_CONCURRENT_EXPORTS = 3;
+  let activeExports = 0;
+  const exportQueue = [];
+
+  function acquireExportSlot() {
+    if (activeExports < MAX_CONCURRENT_EXPORTS) {
+      activeExports++;
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => exportQueue.push(resolve));
+  }
+
+  function releaseExportSlot() {
+    const next = exportQueue.shift();
+    if (next) {
+      next();
+    } else {
+      activeExports = Math.max(0, activeExports - 1);
+    }
+  }
+
+  const MIN_DIMENSION = 100;
+  const MAX_DIMENSION = 4096;
 
 
 module.exports = class projectController {
@@ -25,10 +63,9 @@ module.exports = class projectController {
     const { title, content, mode } = req.body;
     const userId = req.userId;
 
-    if (!title) {
-      return res.status(400).json({
-        error: "Todos os campos devem ser preenchidos",
-      });
+    const validationError = validateProjectInput({ title, mode, content });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
 
     try {
@@ -100,10 +137,9 @@ module.exports = class projectController {
     const { title, previewImage, mode, ...content } = req.body;
     const userId = req.userId;
 
-    if (!title) {
-      return res.status(400).json({
-        error: "Todos os campos devem ser preenchidos",
-      });
+    const validationError = validateProjectInput({ title, mode, content });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
     }
 
     try {
@@ -134,39 +170,88 @@ module.exports = class projectController {
 
   static async exportProject(req, res) {
   let page;
-  const width = req.body.width;
-  const height = req.body.height;
-  async function getBrowser() {
-  if (browserInstance) {
-    try {
-      await browserInstance.version();
-      return browserInstance;
-    } catch (err) {
-      console.warn("Browser anterior fechado, criando novo...");
-      browserInstance = null;
-    }
+  const width = Number(req.body.width);
+  const height = Number(req.body.height);
+
+  if (
+    !Number.isInteger(width) ||
+    !Number.isInteger(height) ||
+    width < MIN_DIMENSION ||
+    height < MIN_DIMENSION ||
+    width > MAX_DIMENSION ||
+    height > MAX_DIMENSION
+  ) {
+    return res.status(400).json({
+      error: `width e height devem ser inteiros entre ${MIN_DIMENSION} e ${MAX_DIMENSION}.`,
+    });
   }
 
-  // Cria uma nova instância do browser
-  browserInstance = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-    ],
-  });
+  async function getBrowser() {
+    if (browserInstance) {
+      try {
+        await browserInstance.version();
+        return browserInstance;
+      } catch (err) {
+        console.warn("Browser anterior fechado, criando novo...");
+        browserInstance = null;
+        browserLaunchPromise = null;
+      }
+    }
 
-  process.on("exit", async () => {
-    if (browserInstance) await browserInstance.close();
-  });
+    // Evita disparar múltiplos launches simultâneos quando várias
+    // exportações chegam ao mesmo tempo antes do browser existir.
+    if (!browserLaunchPromise) {
+      browserLaunchPromise = puppeteer
+        .launch({
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-extensions",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-renderer-backgrounding",
+            "--mute-audio",
+            "--no-first-run",
+          ],
+        })
+        .then((browser) => {
+          browserInstance = browser;
+          browser.once("disconnected", () => {
+            browserInstance = null;
+            browserLaunchPromise = null;
+          });
+          return browser;
+        });
+    }
 
-  return browserInstance;
-}
+    return browserLaunchPromise;
+  }
+
+  await acquireExportSlot();
 
   try {
     const browser = await getBrowser();
 
     page = await browser.newPage();
+
+    // Bloqueia recursos que não afetam o print (analytics, fontes de terceiros
+    // e trackers ficam esperando resposta e atrasavam o "networkidle0" antigo).
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+      const url = request.url();
+      if (
+        /vercel-insights\.com|vercel-analytics\.com|va\.vercel-scripts\.com|google-analytics\.com|googletagmanager\.com/.test(
+          url
+        )
+      ) {
+        return request.abort();
+      }
+      return request.continue();
+    });
 
     await page.setViewport({
       width: width,
@@ -190,9 +275,29 @@ module.exports = class projectController {
 
     const url = `${frontendUrl}/export-template`;
 
-    await page.goto(url, { waitUntil: "networkidle0" });
+    // "domcontentloaded" + espera explícita pelas imagens/fontes do card é
+    // bem mais rápido do que "networkidle0", que fica preso esperando
+    // qualquer requisição em segundo plano (ex: telemetria) terminar.
+    await page.goto(url, { waitUntil: "domcontentloaded" });
 
     await page.waitForSelector("#capture", { visible: true });
+
+    await page.evaluate(async () => {
+      const capture = document.querySelector("#capture");
+      const images = Array.from(capture.querySelectorAll("img"));
+      await Promise.all([
+        document.fonts ? document.fonts.ready : Promise.resolve(),
+        ...images
+          .filter((img) => !img.complete)
+          .map(
+            (img) =>
+              new Promise((resolve) => {
+                img.addEventListener("load", resolve, { once: true });
+                img.addEventListener("error", resolve, { once: true });
+              })
+          ),
+      ]);
+    });
 
     const element = await page.$("#capture");
 
@@ -228,6 +333,7 @@ module.exports = class projectController {
 
   } finally {
     if (page) await page.close();
+    releaseExportSlot();
   }
 }
 

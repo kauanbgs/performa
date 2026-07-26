@@ -1,16 +1,27 @@
 const prisma = require("../connect");
 const bcrypt = require("bcrypt");
-const SALT = 8;
+const SALT = 12;
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
+const { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } = require("../utils/validators");
 
 module.exports = class userController {
   static async createUser(req, res) {
     try {
       const { name, email, password } = req.body;
-      
+
       if (!name || !email || !password) {
         return res.status(400).json({ error: "Nome, email e senha são obrigatórios!" });
+      }
+
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ error: "Email inválido." });
+      }
+
+      if (!isStrongPassword(password)) {
+        return res
+          .status(400)
+          .json({ error: `A senha deve ter no mínimo ${MIN_PASSWORD_LENGTH} caracteres.` });
       }
 
       const hashPassword = await bcrypt.hash(password, SALT);
